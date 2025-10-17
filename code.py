@@ -72,7 +72,16 @@ def theaterChaseRainbow(strip, wait_ms=50):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i + q, 0)
 
+def couleurUnique(strip, color):
+    """Allume toutes les LEDs avec une couleur unique."""
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+    strip.show()
+
 try:
+    # couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
+    # while True:
+    #     pass  # Maintient la couleur jusqu'à interruption
     print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
     while True:
         print('Animation balayage de couleurs...')
