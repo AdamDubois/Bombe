@@ -1,4 +1,5 @@
 import class_DEL
+from rpi_ws281x import Color
 
 LED = class_DEL.DEL()
 
@@ -7,7 +8,7 @@ def main():
     try:
         print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
         while True:
-            pass  # Le code d'animation peut être ajouté ici
+            LED.JayLeFou(Color(255, 0, 0))  # Effet personnalisé Jaylefou en rouge
     except KeyboardInterrupt:
         print("\nProgramme interrompu par l'utilisateur")
         LED.eteindre()

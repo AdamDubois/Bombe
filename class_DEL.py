@@ -1,4 +1,5 @@
 import time
+# from more_itertools import strip
 from rpi_ws281x import PixelStrip, Color
 
 class DEL:
@@ -27,18 +28,45 @@ class DEL:
         self.strip.setBrightness(brightness)
         self.strip.show()
 
-    def set_del_color(self, index, color):
+    def set_del_color(self, index, color, brightness=255):
         """Définit la couleur d'une LED spécifique dans la bande."""
-        color = Color(color[0], color[1], color[2]) # Convertir la couleur en format Color
+        # color = Color(color[0], color[1], color[2]) # Convertir la couleur en format Color
         self.strip.setPixelColor(index, color) # Définir la couleur de la LED
+        self.strip.setBrightness(brightness)
         self.strip.show() # Mettre à jour la bande pour afficher la nouvelle couleur
 
-    def set_all_del_color(self, color):
+    def set_all_del_color(self, color, brightness=255):
         """Définit la même couleur pour toutes les LEDs dans la bande."""
-        color = Color(color[0], color[1], color[2]) # Convertir la couleur en format Color
+        # color = Color(color[0], color[1], color[2]) # Convertir la couleur en format Color
         for i in range(self.strip.numPixels()): # Pour chaque LED dans la bande
-            self.set_del_color(i, color) # Définir la couleur de la LED
+            self.set_del_color(i, color, brightness) # Définir la couleur de la LED
 
     def eteindre(self):
         """Éteint toutes les LEDs dans la bande."""
-        self.set_all_del_color((0, 0, 0)) # Définir la couleur noire (éteint) pour toutes les LEDs
+        self.set_all_del_color(Color(0, 0, 0)) # Définir la couleur noire (éteint) pour toutes les LEDs
+
+    def flash(self, color, flash_count=3, wait_ms=200, brightness=255):
+        """Fait clignoter toutes les LEDs avec une couleur donnée."""
+        time.sleep(wait_ms / 1000.0)
+        for _ in range(flash_count):
+            self.set_all_del_color(color, brightness=brightness)
+            time.sleep(wait_ms / 1000.0)
+            self.eteindre()
+            time.sleep(wait_ms / 1000.0)
+
+    def heartbeat(self, color, beat_count=3, wait_ms=100):
+        """Effet de battement de cœur avec une couleur donnée."""
+        for _ in range(beat_count):
+            for brightness in range(0, 256, 15):
+                self.set_all_del_color(color, brightness=brightness)
+                time.sleep(wait_ms / 1000.0)
+
+            for brightness in range(255, -1, -15):
+                self.set_all_del_color(color, brightness=brightness)
+                self.strip.show()
+                time.sleep(wait_ms / 1000.0)
+
+    def JayLeFou(self, color, beat_ms=100, flash_ms=200):
+        """Effet personnalisé Jaylefou."""
+        self.heartbeat(color, beat_count=10, wait_ms=beat_ms)
+        self.flash(color, flash_count=2, wait_ms=flash_ms, brightness=128)
