@@ -1,21 +1,6 @@
 import time
 from rpi_ws281x import PixelStrip, Color
 
-# Configuration des LEDs WS2812
-LED_COUNT = 75          # Nombre de LEDs dans la bande (ajustez selon votre bande)
-LED_PIN = 18           # Pin GPIO utilisé pour contrôler les LEDs (doit être PWM)
-LED_FREQ_HZ = 800000   # Fréquence du signal LED en hertz (800khz)
-LED_DMA = 10           # Canal DMA à utiliser pour générer le signal (essayez 10)
-LED_BRIGHTNESS = 255   # Luminosité des LEDs (0-255)
-LED_INVERT = False     # True pour inverser le signal (quand on utilise un transistor NPN)
-LED_CHANNEL = 0        # set to '1' for GPIOs 13, 19, 41, 45 or 53
-
-# Créer l'objet PixelStrip
-strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-
-# Initialiser la bibliothèque (doit être appelé une fois avant les autres fonctions)
-strip.begin()
-
 def colorWipe(strip, color, wait_ms=50):
     """Allume les pixels un par un avec la couleur spécifiée."""
     for i in range(strip.numPixels()):
@@ -133,38 +118,3 @@ def jaylefou(strip, color, beat_ms=50, flash_ms=200):
     """Effet personnalisé Jaylefou."""
     heartbeat(strip, color, beat_count=10, wait_ms=beat_ms)
     flash(strip, color, flash_count=2, wait_ms=flash_ms, brightness=128)
-
-try:
-    # couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
-    # strip.setPixelColor(50, Color(255, 0, 0))  # Allume la première LED en rouge
-    # strip.show()
-    while True:
-        # respire(strip, Color(255, 0, 0), wait_ms=150, steps=25)  # Effet de respiration en rouge
-        # police(strip, Color(255, 0, 0), flash_count=True, wait_ms=2)  # Effet de lumière de police en rouge
-        # flash(strip, Color(255, 0, 0), flash_count=5, wait_ms=300)  # Flash rouge 5 fois
-        # heartbeat(strip, Color(255, 0, 0), beat_count=5, wait_ms=50)  # Effet de battement de cœur en rouge
-        jaylefou(strip, Color(255, 0, 0))  # Effet personnalisé Jaylefou en rouge
-    print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
-    while True:
-        print('Animation balayage de couleurs...')
-        colorWipe(strip, Color(255, 0, 0))  # Rouge
-        colorWipe(strip, Color(0, 255, 0))  # Vert
-        colorWipe(strip, Color(0, 0, 255))  # Bleu
-        
-        print('Animation théâtre...')
-        theaterChase(strip, Color(127, 127, 127))  # Blanc
-        theaterChase(strip, Color(127, 0, 0))      # Rouge
-        theaterChase(strip, Color(0, 0, 127))      # Bleu
-        
-        print('Animations arc-en-ciel...')
-        rainbow(strip)
-        rainbowCycle(strip)
-        theaterChaseRainbow(strip)
-
-except KeyboardInterrupt:
-    print("\nProgramme interrompu par l'utilisateur")
-    # Éteindre toutes les LEDs
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(0, 0, 0))
-    strip.show()
-    print("LEDs éteintes - Nettoyage terminé")
