@@ -79,9 +79,9 @@ def couleurUnique(strip, color):
     strip.show()
 
 try:
-    # couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
-    # while True:
-    #     pass  # Maintient la couleur jusqu'à interruption
+    couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
+    while True:
+        pass  # Maintient la couleur jusqu'à interruption
     print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
     while True:
         print('Animation balayage de couleurs...')
