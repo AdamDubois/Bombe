@@ -1,5 +1,5 @@
 import time
-from lib.rpi_ws281x_1_1_3.neopixel import Adafruit_NeoPixel as PixelStrip, Color
+from lib.rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
 
 # Configuration des LEDs WS2812
 LED_COUNT = 75          # Nombre de LEDs dans la bande (ajustez selon votre bande)
@@ -72,7 +72,16 @@ def theaterChaseRainbow(strip, wait_ms=50):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i + q, 0)
 
+def couleurUnique(color):
+    """Définit une couleur unique pour toutes les LEDs."""
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+    strip.show()
+
 try:
+    couleurUnique(Color(255, 0, 0)) # RGB
+    while True:
+        pass
     print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
     while True:
         print('Animation balayage de couleurs...')
