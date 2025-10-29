@@ -23,7 +23,6 @@ def rfid_reader_thread():
         while not stop_reading.is_set():
             # Attendre une carte (bloquant, mais contrôlé)
             id, text = reader.read()
-            time.sleep(0.5)  # Petit délai pour éviter les lectures multiples rapides
             if stop_reading.is_set():
                 break
             text = text.strip()

@@ -45,7 +45,6 @@ class DEL:
         """Vérifie si la couleur donnée est dans le dictionnaire des couleurs."""
         if color in self.dict_couleurs:
             color = self.dict_couleurs[color]
-            print(color)
         else:
             print(f"Couleur '{color}' non reconnue.")
             return -1  # Si la couleur n'est pas reconnue, on sort de la fonction
