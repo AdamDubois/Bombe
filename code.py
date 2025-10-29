@@ -72,72 +72,7 @@ def theaterChaseRainbow(strip, wait_ms=50):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i + q, 0)
 
-def couleurUnique(strip, color, brightness=255):
-    """Allume toutes les LEDs avec une couleur unique."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
-        strip.setBrightness(brightness)
-    strip.show()
-
-def respire(strip, color, wait_ms=50, steps=5):
-    """Effet de respiration avec une couleur donnée."""
-    for brightness in range(0, 256, steps):
-        strip.setBrightness(brightness)
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, color)
-        strip.show()
-        time.sleep(wait_ms / 1000.0)
-    for brightness in range(255, -1, -steps):
-        strip.setBrightness(brightness)
-        for i in range(strip.numPixels()):
-            strip.setPixelColor(i, color)
-        strip.show()
-        time.sleep(wait_ms / 1000.0)
-
-def flash(strip, color, flash_count=3, wait_ms=200, brightness=255):
-    """Fait clignoter toutes les LEDs avec une couleur donnée."""
-    time.sleep(wait_ms / 1000.0)
-    for _ in range(flash_count):
-        couleurUnique(strip, color, brightness=brightness)
-        time.sleep(wait_ms / 1000.0)
-        couleurUnique(strip, Color(0, 0, 0), brightness=brightness)  # Éteindre
-        time.sleep(wait_ms / 1000.0,)
-
-def heartbeat(strip, color, beat_count=3, wait_ms=100):
-    """Effet de battement de cœur avec une couleur donnée."""
-    for _ in range(beat_count):
-        for brightness in range(0, 256, 15):
-            strip.setBrightness(brightness)
-            for i in range(strip.numPixels()):
-                strip.setPixelColor(i, color)
-            strip.show()
-            time.sleep(wait_ms / 1000.0)
-        for brightness in range(255, -1, -15):
-            strip.setBrightness(brightness)
-            for i in range(strip.numPixels()):
-                strip.setPixelColor(i, color)
-            strip.show()
-            time.sleep(wait_ms / 1000.0)
-
-def police(strip, color, flash_count=3, wait_ms=100):
-    """Effet de lumière de police avec rouge et bleu."""
-    strip.setBrightness(255)
-    for _ in range(flash_count):
-        couleurUnique(strip, Color(255, 0, 0))  # Rouge
-        time.sleep(wait_ms / 1000.0)
-        couleurUnique(strip, Color(0, 0, 255))  # Bleu
-        time.sleep(wait_ms / 1000.0)
-    couleurUnique(strip, Color(0, 0, 0))  # Éteindre à la fin
-
-def jaylefou(strip, color, beat_ms=50, flash_ms=200):
-    """Effet personnalisé Jaylefou."""
-    heartbeat(strip, color, beat_count=10, wait_ms=beat_ms)
-    flash(strip, color, flash_count=2, wait_ms=flash_ms, brightness=128)
-
 try:
-    # couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
-    # strip.setPixelColor(50, Color(255, 0, 0))  # Allume la première LED en rouge
-    # strip.show()
     print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
     while True:
         print('Animation balayage de couleurs...')
