@@ -110,6 +110,36 @@ class MainWindow(QMainWindow):
         # Démarrer le défilement automatique
         self.demarrer_defilement()
 
+
+        #Affichage de la console retour Camera
+        camera_frame = QFrame(self)
+        camera_frame.setGeometry(1300, 500, 600, 500)
+        camera_frame.setStyleSheet("""
+            QFrame {
+                background-image: url('/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover; 
+                border: 2px solid #00ff00;
+                border-radius: 8px;
+                padding: 8px;
+            }
+        """)
+        self.camera_text = QTextEdit(camera_frame)
+        self.camera_text.setGeometry(10, 10, 580, 480)
+        self.camera_text.setReadOnly(True)  # Lecture seule
+        self.camera_text.setStyleSheet("""
+            QTextEdit {
+                background-color: rgba(0,0,0,0.9);
+                color: #00ff00;
+                font-family: 'Courier New', monospace;
+                font-size: 20px;
+                border: none;
+                padding: 5px;
+            }
+        """)
+
+
     def demarrer_defilement(self):
         """Démarre le défilement des commandes avec délai aléatoire"""
         # Créer et démarrer le timer - pas de message d'initialisation
