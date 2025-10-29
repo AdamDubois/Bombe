@@ -28,9 +28,10 @@ IMAGE_CAMERA = [
     '/home/admin/Documents/Projet_InXtremis/code/img/imgAvocado.jpg', #1
     '/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg',  #2
     '/home/admin/Documents/Projet_InXtremis/code/img/imgKiwi.jpg',    #3
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgOrange.jpg',  #4
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgBanane.jpg',  #4
     '/home/admin/Documents/Projet_InXtremis/code/img/imgPiment.jpg',  #5
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgTomato.jpg'   #6
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgTomate.jpg',  #6
+    '/home/admin/Documents/Projet_InXtremis/code/img/NoSignal.jpg'    #7
 ]
 
 ORDRE_CAMERA = [2,6,4,1,5,3,0] 
@@ -175,7 +176,6 @@ class MainWindow(QMainWindow):
         scrollbar = self.console_text.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
         
-        # Redémarrer le timer avec un nouveau délai aléatoire entre 1 et 5 secondes
         delai_suivant = random.randint(1000, 3000)
         self.timer.start(delai_suivant)
 
@@ -204,14 +204,36 @@ class MainWindow(QMainWindow):
         """)
         
     def changer_image_camera_suivante(self):
-        """Passe à l'image suivante dans l'ordre défini"""
-        self.camera_index += 1
+        """Passe à l'image suivante dans l'ordre défini avec possibilité d'afficher NoSignal aléatoirement"""
         
-        # Recommencer au début quand on atteint la fin de l'ordre
-        if self.camera_index >= len(ORDRE_CAMERA):
-            self.camera_index = 0
+        # 20% de chance d'afficher l'image NoSignal (index 7) au lieu de l'ordre normal
+        if random.randint(1, 100) <= 20:  # 20% de chance
+            self.afficher_image_nosignal()
+        else:
+            # Affichage normal selon l'ordre défini
+            self.camera_index += 1
             
-        self.changer_image_camera()
+            # Recommencer au début quand on atteint la fin de l'ordre
+            if self.camera_index >= len(ORDRE_CAMERA):
+                self.camera_index = 0
+                
+            self.changer_image_camera()
+    
+    def afficher_image_nosignal(self):
+        """Affiche temporairement l'image NoSignal"""
+        image_nosignal = IMAGE_CAMERA[7]  # Index 7 = NoSignal.jpg
+        
+        self.camera_frame.setStyleSheet(f"""
+            QFrame {{
+                background-image: url('{image_nosignal}');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover; 
+                border: 2px solid #00ff00;
+                border-radius: 8px;
+                padding: 8px;
+            }}
+        """)
 
 
 def main():

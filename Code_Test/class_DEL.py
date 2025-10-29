@@ -5,17 +5,17 @@ class DEL:
     """Classe pour gérer une bande de LEDs WS2812."""
 
     dict_couleurs ={
-        "rouge": Color(255, 0, 0),
-        "vert": Color(0, 255, 0),
-        "bleu": Color(0, 0, 255),
-        "blanc": Color(255, 255, 255),
-        "noir": Color(0, 0, 0),
-        "jaune": Color(255, 255, 0),
-        "cyan": Color(0, 255, 255),
-        "magenta": Color(255, 0, 255),
-        "orange": Color(255, 165, 0),
-        "violet": Color(128, 0, 128),
-        "rose": Color(255, 192, 203)
+        "rouge": (255, 0, 0),
+        "vert": (0, 255, 0),
+        "bleu": (0, 0, 255),
+        "blanc": (255, 255, 255),
+        "noir": (0, 0, 0),
+        "jaune": (255, 255, 0),
+        "cyan": (0, 255, 255),
+        "magenta": (255, 0, 255),
+        "orange": (255, 165, 0),
+        "violet": (128, 0, 128),
+        "rose": (255, 192, 203)
     }
 
     etape = 0
@@ -45,9 +45,10 @@ class DEL:
         """Vérifie si la couleur donnée est dans le dictionnaire des couleurs."""
         if color in self.dict_couleurs:
             color = self.dict_couleurs[color]
+            print(color)
         else:
             print(f"Couleur '{color}' non reconnue.")
-            return True  # Si la couleur n'est pas reconnue, on sort de la fonction
+            return -1  # Si la couleur n'est pas reconnue, on sort de la fonction
         return color
 
     def set_brightness(self, brightness):
@@ -56,26 +57,20 @@ class DEL:
 
     def set_del_color(self, index, color, brightness=255):
         """Définit la couleur d'une LED spécifique dans la bande."""
-        if self.checkCouleur(color) == True:
-            return
-        self.strip.setPixelColor(index, color) # Définir la couleur de la LED
+        self.strip.setPixelColor(index, Color(*color)) # Définir la couleur de la LED
         self.strip.setBrightness(brightness)
 
     def set_all_del_color(self, color, brightness=255):
         """Définit la même couleur pour toutes les LEDs dans la bande."""
-        if self.checkCouleur(color) == True:
-            return
         for i in range(self.LED_COUNT): # Pour chaque LED dans la bande
             self.set_del_color(i, color, brightness) # Définir la couleur de la LED
 
     def eteindre(self):
         """Éteint toutes les LEDs dans la bande."""
-        self.set_all_del_color("noir") # Définir la couleur noire (éteint) pour toutes les LEDs
+        self.set_all_del_color((0,0,0)) # Définir la couleur noire (éteint) pour toutes les LEDs
 
     def flash(self, color, flash_count=3, wait_ms=200, brightness=255):
         """Fait clignoter toutes les LEDs avec une couleur donnée."""
-        if self.checkCouleur(color) == True:
-            return
         time.sleep(wait_ms / 1000.0)
         for _ in range(flash_count):
             self.set_all_del_color(color, brightness=brightness)
@@ -87,8 +82,6 @@ class DEL:
 
     def heartbeat(self, color, beat_count=3, wait_ms=100):
         """Effet de battement de cœur avec une couleur donnée."""
-        if self.checkCouleur(color) == True:
-            return
         for _ in range(beat_count):
             for brightness in range(0, 256, 15):
                 self.set_all_del_color(color, brightness=brightness)
@@ -102,7 +95,5 @@ class DEL:
 
     def JayLeFou(self, color, beat_ms=50, flash_ms=200):
         """Effet personnalisé Jaylefou."""
-        if self.checkCouleur(color) == True:
-            return
         self.heartbeat(color, beat_count=10, wait_ms=beat_ms)
         self.flash(color, flash_count=2, wait_ms=flash_ms, brightness=128)

@@ -44,10 +44,12 @@ try:
         # Par exemple, vérifier si une nouvelle carte a été lue
         with data_lock:
             if last_text is not None and last_text != last_couleur:
-                last_couleur = last_text
                 print(f"[Main] Mise à jour LEDs avec : {last_text}")
-                LED.set_all_del_color(last_text)
-                LED.strip.show()
+                couleur = LED.checkCouleur(last_text)
+                if couleur != -1:
+                    last_couleur = last_text
+                    LED.set_all_del_color(couleur)
+                    LED.strip.show()
                 # Réinitialiser pour éviter de répéter
                 last_id = None
                 last_text = None
