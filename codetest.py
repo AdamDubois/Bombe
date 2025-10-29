@@ -1,12 +1,5 @@
 import time
-import sys
-import os
-
-# Ajouter le chemin vers la bibliothèque locale
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib', 'rpi_ws281x-1.1.3'))
-
-# Importer depuis la bibliothèque locale
-from neopixel import Adafruit_NeoPixel as PixelStrip, Color
+from lib.rpi_ws281x_1_1_3.neopixel import Adafruit_NeoPixel as PixelStrip, Color
 
 # Configuration des LEDs WS2812
 LED_COUNT = 75          # Nombre de LEDs dans la bande (ajustez selon votre bande)
