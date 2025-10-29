@@ -13,9 +13,9 @@ try:
             print(text)
             print("Appliquer l'effet LED pour le tag lu...")
             print(type(text))
-            LED.JayLeFou("bleu")
+            LED.set_all_del_color("rouge")
             print("Effet LED appliqué pour le tag lu.")
-            
+
     except KeyboardInterrupt:
         print("\nProgramme interrompu par l'utilisateur")
         LED.eteindre()

@@ -49,6 +49,8 @@ class DEL:
 
     def set_all_del_color(self, color, brightness=255):
         """Définit la même couleur pour toutes les LEDs dans la bande."""
+        print(color)
+        print(type(color))
         for i in range(self.LED_COUNT): # Pour chaque LED dans la bande
             self.set_del_color(i, color, brightness) # Définir la couleur de la LED
 
