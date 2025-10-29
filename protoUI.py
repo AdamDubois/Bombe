@@ -22,6 +22,18 @@ from PyQt5.QtGui import QFont
 
 titre_Du_Projet = "Projet InXtremis"#Titre du projet
 
+# =================== Liste image Camera ==============#
+IMAGE_CAMERA = [
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgFraise.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgAvocado.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgKiwi.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgOrange.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgPiment.jpg',
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgTomato.jpg'
+]
+
+
 #=================== Liste de commande de style "hacker" ===================#
 COMMANDS = [
     "init_link -addr 10.0.0.19 --sync",
@@ -116,7 +128,7 @@ class MainWindow(QMainWindow):
         camera_frame.setGeometry(1300, 500, 600, 500)
         camera_frame.setStyleSheet("""
             QFrame {
-                background-image: url('/home/admin/Documents/Projet_InXtremis/code/img/imgFraise.jpg');
+                background-image: url(IMAGE_CAMERA[0]);
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover; 
