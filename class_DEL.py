@@ -1,6 +1,5 @@
 import time
-# from more_itertools import strip
-from rpi_ws281x import PixelStrip, Color
+from lib.rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
 
 class DEL:
     """Classe pour gérer une bande de LEDs WS2812."""
