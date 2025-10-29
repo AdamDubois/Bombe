@@ -29,7 +29,7 @@ COMMANDS = [
     "scan_ports --range 1-65535 --fast",
     "decrypt --keyfile /tmp/key.bin",
     "payload_upload --target 192.168.0.42",
-    "grep 'ERROR'/code = 3478 /var/log/syslog | tail -n 50",
+    "grep 'ERROR'/CODE = 3478 /var/log/syslog | tail -n 50",
     "mount -o remount,rw /",
     "ssh root@198.51.100.10 -p 2222",
     "curl -s http://mirror/pack | tar -xzf -",
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
 
         # Créer un frame pour la console hacker
         console_frame = QFrame(self)
-        console_frame.setGeometry(30, 900, 1200, 600)
+        console_frame.setGeometry(30, 500, 1200, 500)
         console_frame.setStyleSheet("""
             QFrame {
                 background-color: rgba(5,5,5,0.9); 
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 
         # Titre de la console
         label_console = QLabel("=== CONSOLE SYSTÈME ===", self)
-        label_console.setGeometry(30, 870, 400, 30)
+        label_console.setGeometry(30, 470, 400, 30)
         label_console.setStyleSheet("""
             color: #00ff00;
             font-weight: bold;
@@ -86,7 +86,7 @@ class MainWindow(QMainWindow):
 
         # Zone de texte pour afficher les commandes qui défilent
         self.console_text = QTextEdit(console_frame)
-        self.console_text.setGeometry(10, 10, 1100, 580)
+        self.console_text.setGeometry(10, 10, 1180, 480)
         self.console_text.setReadOnly(True)  # Lecture seule
         
         # Enlever les barres de défilement
@@ -111,11 +111,13 @@ class MainWindow(QMainWindow):
         self.demarrer_defilement()
 
     def demarrer_defilement(self):
-        """Démarre le défilement des commandes"""
+        """Démarre le défilement des commandes avec délai aléatoire"""
         # Créer et démarrer le timer - pas de message d'initialisation
         self.timer = QTimer()
         self.timer.timeout.connect(self.nouvelle_commande)
-        self.timer.start(2000)  # Nouvelle commande toutes les 2 secondes
+        # Délai aléatoire entre 1 et 4 secondes pour commencer
+        delai_initial = random.randint(500, 3000)
+        self.timer.start(delai_initial)
         
     def nouvelle_commande(self):
         commande = COMMANDS[self.command_index]
@@ -130,13 +132,18 @@ class MainWindow(QMainWindow):
         # Scroll automatique vers le bas
         scrollbar = self.console_text.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
+        
+        # Redémarrer le timer avec un nouveau délai aléatoire entre 1 et 5 secondes
+        delai_suivant = random.randint(1000, 3000)
+        self.timer.start(delai_suivant)
 
 
 def main():
     app = QApplication(sys.argv)
     window = MainWindow() 
-    # window.setWindowFlags(Qt.FramelessWindowHint) #fenetre sans bordure
-    window.showFullScreen() #pleine ecran
+    
+    # Pour prendre TOUT l'écran et cacher la barre de tâches du système
+    window.showFullScreen()
    
     
     sys.exit(app.exec_())
