@@ -138,12 +138,6 @@ try:
     # couleurUnique(strip, Color(255, 255, 255))  # Allume toutes les LEDs en blanc
     # strip.setPixelColor(50, Color(255, 0, 0))  # Allume la première LED en rouge
     # strip.show()
-    while True:
-        # respire(strip, Color(255, 0, 0), wait_ms=150, steps=25)  # Effet de respiration en rouge
-        # police(strip, Color(255, 0, 0), flash_count=True, wait_ms=2)  # Effet de lumière de police en rouge
-        # flash(strip, Color(255, 0, 0), flash_count=5, wait_ms=300)  # Flash rouge 5 fois
-        # heartbeat(strip, Color(255, 0, 0), beat_count=5, wait_ms=50)  # Effet de battement de cœur en rouge
-        jaylefou(strip, Color(255, 0, 0))  # Effet personnalisé Jaylefou en rouge
     print('Contrôle de bande LED WS2812 - Appuyez Ctrl-C pour quitter.')
     while True:
         print('Animation balayage de couleurs...')
