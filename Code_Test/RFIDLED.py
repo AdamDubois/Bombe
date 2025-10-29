@@ -9,6 +9,7 @@ reader = SimpleMFRC522()
 LED = class_DEL.DEL()
 
 # Variable pour stocker les dernières données lues
+last_couleur = None
 last_id = None
 last_text = None
 data_lock = threading.Lock()  # Pour éviter les conflits d'accès
@@ -42,7 +43,8 @@ try:
         # Ici, tu peux faire autre chose en parallèle
         # Par exemple, vérifier si une nouvelle carte a été lue
         with data_lock:
-            if last_text is not None:
+            if last_text is not None and last_text != last_couleur:
+                last_couleur = last_text
                 print(f"[Main] Mise à jour LEDs avec : {last_text}")
                 LED.set_all_del_color(last_text)
                 LED.strip.show()
