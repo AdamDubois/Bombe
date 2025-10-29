@@ -24,14 +24,16 @@ titre_Du_Projet = "Projet InXtremis"#Titre du projet
 
 # =================== Liste image Camera ==============#
 IMAGE_CAMERA = [
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgFraise.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgAvocado.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgKiwi.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgOrange.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgPiment.jpg',
-    '/home/admin/Documents/Projet_InXtremis/code/img/imgTomato.jpg'
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgFraise.jpg',  #0
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgAvocado.jpg', #1
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg',  #2
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgKiwi.jpg',    #3
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgOrange.jpg',  #4
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgPiment.jpg',  #5
+    '/home/admin/Documents/Projet_InXtremis/code/img/imgTomato.jpg'   #6
 ]
+
+ORDRE_CAMERA = [2,6,4,1,5,3,0] 
 
 
 #=================== Liste de commande de style "hacker" ===================#
@@ -119,25 +121,23 @@ class MainWindow(QMainWindow):
         # Variables pour le défilement
         self.command_index = 0
         
+        # Variables pour la rotation des images de caméra
+        self.camera_index = 0
+        
         # Démarrer le défilement automatique
         self.demarrer_defilement()
 
 
         #Affichage de la console retour Camera
-        camera_frame = QFrame(self)
-        camera_frame.setGeometry(1300, 500, 600, 500)
-        camera_frame.setStyleSheet("""
-            QFrame {
-                background-image: url(IMAGE_CAMERA[0]);
-                background-repeat: no-repeat;
-                background-position: center;
-                background-size: cover; 
-                border: 2px solid #00ff00;
-                border-radius: 8px;
-                padding: 8px;
-            }
-        """)
-        self.camera_text = QTextEdit(camera_frame)
+        self.camera_frame = QFrame(self)
+        self.camera_frame.setGeometry(1300, 500, 600, 500)
+        
+        # Démarrer avec la première image de l'ordre
+        self.changer_image_camera()
+        
+        # Démarrer la rotation des images de caméra
+        self.demarrer_rotation_camera()
+        self.camera_text = QTextEdit(self.camera_frame)
         self.camera_text.setGeometry(10, 10, 580, 480)
         self.camera_text.setReadOnly(True)  # Lecture seule
         self.camera_text.setStyleSheet("""
@@ -178,6 +178,40 @@ class MainWindow(QMainWindow):
         # Redémarrer le timer avec un nouveau délai aléatoire entre 1 et 5 secondes
         delai_suivant = random.randint(1000, 3000)
         self.timer.start(delai_suivant)
+
+    def demarrer_rotation_camera(self):
+        """Démarre la rotation des images de caméra selon l'ordre défini"""
+        self.timer_camera = QTimer()
+        self.timer_camera.timeout.connect(self.changer_image_camera_suivante)
+        self.timer_camera.start(3000)  # Change toutes les 3 secondes
+        
+    def changer_image_camera(self):
+        """Change l'image de fond de la caméra selon l'index actuel"""
+        # Récupérer l'index de l'image selon l'ordre défini
+        image_index = ORDRE_CAMERA[self.camera_index]
+        image_choisie = IMAGE_CAMERA[image_index]
+        
+        self.camera_frame.setStyleSheet(f"""
+            QFrame {{
+                background-image: url('{image_choisie}');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover; 
+                border: 2px solid #00ff00;
+                border-radius: 8px;
+                padding: 8px;
+            }}
+        """)
+        
+    def changer_image_camera_suivante(self):
+        """Passe à l'image suivante dans l'ordre défini"""
+        self.camera_index += 1
+        
+        # Recommencer au début quand on atteint la fin de l'ordre
+        if self.camera_index >= len(ORDRE_CAMERA):
+            self.camera_index = 0
+            
+        self.changer_image_camera()
 
 
 def main():

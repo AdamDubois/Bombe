@@ -5,7 +5,6 @@ import threading
 import time
 
 # Initialisation
-GPIO.cleanup()
 reader = SimpleMFRC522()
 LED = class_DEL.DEL()
 

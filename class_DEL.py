@@ -18,6 +18,8 @@ class DEL:
         "rose": Color(255, 192, 203)
     }
 
+    etape = 0
+
     def __init__(self):
         """Initialise la bande de LEDs avec les paramètres par défaut."""
         # Configuration des LEDs WS2812
@@ -35,6 +37,9 @@ class DEL:
         # Initialiser la bibliothèque (doit être appelé une fois avant les autres fonctions)
         self.strip.begin()
 
+    def reintEtape(self):
+        """Réinitialise l'étape de l'animation."""
+        self.etape = 0
     
     def set_brightness(self, brightness):
         """Définit la luminosité de la bande de LEDs."""
