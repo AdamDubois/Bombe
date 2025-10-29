@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 from lib.mfrc522 import SimpleMFRC522
 import class_DEL
 
+GPIO.cleanup()
+
 reader = SimpleMFRC522()
 LED = class_DEL.DEL()
 
@@ -9,13 +11,10 @@ try:
     try:
         while True:
             id, text = reader.read()
+            text = text.strip() # Nettoyer les espaces blancs
             print(id)
             print(text)
-            print("Appliquer l'effet LED pour le tag lu...")
-            print(type(text))
-            LED.set_all_del_color("rouge")
-            print("Effet LED appliqué pour le tag lu.")
-
+            LED.JayLeFou(text)
     except KeyboardInterrupt:
         print("\nProgramme interrompu par l'utilisateur")
         LED.eteindre()

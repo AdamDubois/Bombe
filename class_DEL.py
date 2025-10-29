@@ -49,8 +49,6 @@ class DEL:
 
     def set_all_del_color(self, color, brightness=255):
         """Définit la même couleur pour toutes les LEDs dans la bande."""
-        print(color)
-        print(type(color))
         for i in range(self.LED_COUNT): # Pour chaque LED dans la bande
             self.set_del_color(i, color, brightness) # Définir la couleur de la LED
 
@@ -84,5 +82,7 @@ class DEL:
 
     def JayLeFou(self, color, beat_ms=50, flash_ms=200):
         """Effet personnalisé Jaylefou."""
+        print(color)
+        print(type(color))
         self.heartbeat(color, beat_count=10, wait_ms=beat_ms)
         self.flash(color, flash_count=2, wait_ms=flash_ms, brightness=128)

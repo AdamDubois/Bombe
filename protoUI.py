@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         camera_frame.setGeometry(1300, 500, 600, 500)
         camera_frame.setStyleSheet("""
             QFrame {
-                background-image: url('/home/admin/Documents/Projet_InXtremis/code/img/imgCarrot.jpg');
+                background-image: url('/home/admin/Documents/Projet_InXtremis/code/img/imgFraise.jpg');
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover; 
