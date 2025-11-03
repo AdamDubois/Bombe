@@ -42,13 +42,11 @@ class DEL:
         self.etape = 0
     
     def checkCouleur(self, color):
-        """Vérifie si la couleur donnée est dans le dictionnaire des couleurs."""
+        """Vérifie si la couleur donnée est dans le dictionnaire des couleurs. Retourne la valeur RGB ou -1 si non reconnue."""
         if color in self.dict_couleurs:
-            color = self.dict_couleurs[color]
+            return True
         else:
-            print(f"Couleur '{color}' non reconnue.")
-            return -1  # Si la couleur n'est pas reconnue, on sort de la fonction
-        return color
+            return False
 
     def set_brightness(self, brightness):
         """Définit la luminosité de la bande de LEDs."""
