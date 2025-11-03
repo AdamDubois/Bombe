@@ -18,13 +18,13 @@ stop_reading = threading.Event()  # Contrôle du thread
 # Thread de lecture RFID
 def rfid_reader_thread():
     global last_id, last_text
-    print("Thread RFID démarré.")
+    print("[RFID] Thread RFID démarré.")
     try:
         while not stop_reading.is_set():
             # Attendre une carte (bloquant, mais contrôlé)
-            print("Approchez une carte RFID pour lire...")
+            print("[RFID] Approchez une carte RFID pour lire...")
             id, text = reader.read()
-            print("Carte détectée.")
+            print("[RFID] Carte détectée.")
             if stop_reading.is_set():
                 break
             text = text.strip()
@@ -36,9 +36,9 @@ def rfid_reader_thread():
 
     except Exception as e:
         if not stop_reading.is_set():
-            print(f"Erreur lecture RFID : {e}")
+            print(f"[RFID] Erreur lecture RFID : {e}")
     finally:
-        print("Thread RFID arrêté.")
+        print("[RFID] Thread RFID arrêté.")
 
 # Démarrer le thread
 thread = threading.Thread(target=rfid_reader_thread, daemon=True)
@@ -57,20 +57,20 @@ try:
                     LED.strip.show()
 
                     # ÉCRIRE SUR LA CARTE
-                    text = input('Nouvelle donnée à écrire : ')
-                    print("Approchez la carte pour écrire...")
+                    text = input('[Main] Nouvelle donnée à écrire : ')
+                    print("[Main] Approchez la carte pour écrire...")
 
                     # 1. Arrêter la lecture
                     stop_reading.set()
-                    time.sleep(0.5)  # Laisser le temps au thread de sortir
+                    time.sleep(1)  # Laisser le temps au thread de sortir
 
                     try:
                         # 2. Écrire
                         reader.write(text)
-                        print("Écriture réussie !")
+                        print("[Main] Écriture réussie !")
                         time.sleep(2)  # Pause pour éviter les lectures immédiates
                     except Exception as e:
-                        print(f"Échec écriture : {e}")
+                        print(f"[Main] Échec écriture : {e}")
                     finally:
                         # 3. Relancer la lecture
                         stop_reading.clear()
