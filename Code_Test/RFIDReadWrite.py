@@ -22,7 +22,9 @@ def rfid_reader_thread():
     try:
         while not stop_reading.is_set():
             # Attendre une carte (bloquant, mais contrôlé)
+            print("Approchez une carte RFID pour lire...")
             id, text = reader.read()
+            print("Carte détectée.")
             if stop_reading.is_set():
                 break
             text = text.strip()
@@ -74,7 +76,7 @@ try:
                         stop_reading.clear()
                         # Relancer le thread
                         thread = threading.Thread(target=rfid_reader_thread, daemon=True)
-                        thread.start()
+                        #thread.start()
 
                 # Réinitialiser
                 last_id = None
