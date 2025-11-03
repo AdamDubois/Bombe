@@ -66,6 +66,7 @@ try:
                         # 2. Écrire
                         reader.write(text)
                         print("Écriture réussie !")
+                        time.sleep(2)  # Pause pour éviter les lectures immédiates
                     except Exception as e:
                         print(f"Échec écriture : {e}")
                     finally:
