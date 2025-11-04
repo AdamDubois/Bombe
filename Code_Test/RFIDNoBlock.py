@@ -3,21 +3,6 @@ from lib.mfrc522 import SimpleMFRC522
 import class_DEL
 import time
 
-# Dictionnaire des couleurs
-dict_couleurs ={
-        "rouge": (255, 0, 0),
-        "vert": (0, 255, 0),
-        "bleu": (0, 0, 255),
-        "blanc": (255, 255, 255),
-        "noir": (0, 0, 0),
-        "jaune": (255, 255, 0),
-        "cyan": (0, 255, 255),
-        "magenta": (255, 0, 255),
-        "orange": (255, 165, 0),
-        "violet": (128, 0, 128),
-        "rose": (255, 192, 203)
-    }
-
 # Initialisation
 reader = SimpleMFRC522()
 LED = class_DEL.DEL()
@@ -42,7 +27,7 @@ try:
 
         if LED.checkCouleur(text) and text != last_couleur:
             last_couleur = text
-            LED.set_all_del_color(dict_couleurs[text])
+            LED.set_all_del_color(LED.dict_couleurs[text])
             LED.strip.show()
 
             # ÉCRIRE SUR LA CARTE
