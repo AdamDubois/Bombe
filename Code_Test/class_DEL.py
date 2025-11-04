@@ -66,7 +66,7 @@ class DEL:
         """Éteint toutes les LEDs dans la bande."""
         self.set_all_del_color((0,0,0)) # Définir la couleur noire (éteint) pour toutes les LEDs
 
-    def flash(self, color, flash_count=3, wait_ms=200, brightness=255):
+    def flash(self, color, flash_count=1, wait_ms=200, brightness=255):
         """Fait clignoter toutes les LEDs avec une couleur donnée."""
         time.sleep(wait_ms / 1000.0)
         for _ in range(flash_count):
@@ -77,7 +77,7 @@ class DEL:
             self.strip.show()
             time.sleep(wait_ms / 1000.0)
 
-    def heartbeat(self, color, beat_count=3, wait_ms=100):
+    def heartbeat(self, color, beat_count=1, wait_ms=100):
         """Effet de battement de cœur avec une couleur donnée."""
         for _ in range(beat_count):
             for brightness in range(0, 256, 15):
