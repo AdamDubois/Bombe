@@ -1,12 +1,14 @@
 import RPi.GPIO as GPIO
 import time
 
-BUTTON_PIN = 16
+from lib.mfrc522 import SimpleMFRC522
+reader = SimpleMFRC522()
 
-GPIO.setmode(GPIO.BOARD)
+BUTTON_PIN = 16
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 print("Appuyez sur le bouton (Ctrl+C pour quitter)")
+
 try:
     while True:
         if GPIO.input(BUTTON_PIN) == GPIO.LOW:
