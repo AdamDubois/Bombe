@@ -25,6 +25,7 @@ import spidev
 import signal
 import time
 import logging
+from lib import Config
 
 class MFRC522:
     MAX_LEN = 16
@@ -141,12 +142,13 @@ class MFRC522:
             GPIO.setmode(pin_mode)
         else:
             pin_mode = gpioMode
-            
-        if pin_rst == -1:
-            if pin_mode == 11:
-                pin_rst = 15
-            else:
-                pin_rst = 22
+        
+        pin_rst = Config.RFID_RESET_PIN
+        # if pin_rst == -1:
+        #     if pin_mode == 11:
+        #         pin_rst = 15
+        #     else:
+        #         pin_rst = 22
             
         GPIO.setup(pin_rst, GPIO.OUT)
         GPIO.output(pin_rst, 1)

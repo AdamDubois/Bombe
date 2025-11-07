@@ -1,5 +1,5 @@
 import time
-from rpi_ws281x import PixelStrip, Color
+from lib.rpi_ws281x import PixelStrip, Color
 
 # Configuration des LEDs WS2812
 LED_COUNT = 75          # Nombre de LEDs dans la bande (ajustez selon votre bande)

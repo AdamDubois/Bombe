@@ -1,5 +1,5 @@
 import socket
-import class_DEL as led
+import code.Code_Test.lib.class_DEL as led
 
 LED = led.DEL()
 

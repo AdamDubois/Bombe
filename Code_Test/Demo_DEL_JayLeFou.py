@@ -1,4 +1,4 @@
-import class_DEL
+import lib.class_DEL as class_DEL
 from lib.rpi_ws281x import Color
 
 LED = class_DEL.DEL()

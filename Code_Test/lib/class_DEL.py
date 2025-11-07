@@ -1,5 +1,6 @@
 import time
-from lib.rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
+from rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
+from lib import Config
 
 class DEL:
     """Classe pour gérer une bande de LEDs WS2812."""
@@ -23,13 +24,13 @@ class DEL:
     def __init__(self):
         """Initialise la bande de LEDs avec les paramètres par défaut."""
         # Configuration des LEDs WS2812
-        self.LED_COUNT = 75          # Nombre de LEDs dans la bande (ajustez selon votre bande)
-        self.LED_PIN = 18           # Pin GPIO utilisé pour contrôler les LEDs (doit être PWM)
-        self.LED_FREQ_HZ = 800000   # Fréquence du signal LED en hertz (800khz)
-        self.LED_DMA = 10           # Canal DMA à utiliser pour générer le signal (essayez 10)
-        self.LED_BRIGHTNESS = 255   # Luminosité des LEDs (0-255)
-        self.LED_INVERT = False     # True pour inverser le signal (quand on utilise un transistor NPN)
-        self.LED_CHANNEL = 0        # set to '1' for GPIOs 13, 19, 41, 45 or 53
+        self.LED_COUNT = Config.LED_STRIP_COUNT             # Nombre de LEDs dans la bande (ajustez selon votre bande)
+        self.LED_PIN = Config.LED_STRIP_PIN                 # Pin GPIO utilisé pour contrôler les LEDs (doit être PWM)
+        self.LED_FREQ_HZ = Config.LED_STRIP_FREQ_HZ         # Fréquence du signal LED en hertz (800khz)
+        self.LED_DMA = Config.LED_STRIP_DMA                 # Canal DMA à utiliser pour générer le signal (essayez 10)
+        self.LED_BRIGHTNESS = Config.LED_STRIP_BRIGHTNESS   # Luminosité des LEDs (0-255)
+        self.LED_INVERT = Config.LED_STRIP_INVERT           # True pour inverser le signal (quand on utilise un transistor NPN)
+        self.LED_CHANNEL = Config.LED_STRIP_CHANNEL         # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
         # Créer l'objet PixelStrip
         self.strip = PixelStrip(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
