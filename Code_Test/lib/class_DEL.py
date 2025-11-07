@@ -1,5 +1,5 @@
 import time
-from rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
+from lib.rpi_ws281x import Adafruit_NeoPixel as PixelStrip, Color
 from lib import Config
 
 class DEL:
