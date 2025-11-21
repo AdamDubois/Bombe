@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 from lib.mfrc522 import SimpleMFRC522
-import code.Code_Test.lib.class_DEL as class_DEL
+import lib.class_DEL as class_DEL
 import time
 
 # Initialisation
