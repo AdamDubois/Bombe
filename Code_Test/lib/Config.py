@@ -71,7 +71,7 @@ SPI_MISO_PIN = 21           # Pin GPIO utilisé pour la ligne de données MISO S
 
 # RFID Reader
 #Pin definitions for the RFID reader
-RFID_RESET_PIN = 22         # Pin GPIO utilisé pour réinitialiser le lecteur RFID
+RFID_RESET_PIN = 22         # Pin GPIO utilisé pour réinitialiser le lecteur RFID NE PEUT PAS ÊTRE CHANGÉ
 RFID_SS_PIN = 24            # Pin GPIO utilisé pour la sélection de puce (Slave Select) du lecteur RFID
 
 #--------------------------------------------------------------------------#
@@ -87,3 +87,10 @@ LED_STRIP_DMA = 10          # Canal DMA à utiliser pour générer le signal (es
 LED_STRIP_BRIGHTNESS = 255  # Luminosité des LEDs (0-255)
 LED_STRIP_INVERT = False    # True pour inverser le signal (quand on utilise un transistor NPN)
 LED_STRIP_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+
+#--------------------------------------------------------------------------#
+
+# Boutons
+#Pin definitions for buttons
+BUTTON_G_PIN = 15          # Pin GPIO utilisé pour le bouton à gauche
+BUTTON_D_PIN = 13          # Pin GPIO utilisé pour le bouton à droite
