@@ -184,7 +184,8 @@ class MainWindow(QMainWindow):
         self.timer_camera = QTimer()
         self.timer_camera.timeout.connect(self.changer_image_camera_suivante)
         self.timer_camera.start(3000)  # Change toutes les 3 secondes
-        
+    
+    
     def changer_image_camera(self):
         """Change l'image de fond de la caméra selon l'index actuel"""
         # Récupérer l'index de l'image selon l'ordre défini
@@ -202,7 +203,8 @@ class MainWindow(QMainWindow):
                 padding: 8px;
             }}
         """)
-        
+    
+    #Fonction pour changer d'image
     def changer_image_camera_suivante(self):
         """Passe à l'image suivante dans l'ordre défini avec possibilité d'afficher NoSignal aléatoirement"""
         
@@ -219,6 +221,7 @@ class MainWindow(QMainWindow):
                 
             self.changer_image_camera()
     
+    #Fonction pour l'imgae avec pas de signal
     def afficher_image_nosignal(self):
         """Affiche temporairement l'image NoSignal"""
         image_nosignal = IMAGE_CAMERA[7]  # Index 7 = NoSignal.jpg

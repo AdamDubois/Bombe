@@ -32,7 +32,7 @@ listener = UDPListener()
 listener.start()
 
 #-----------------------------------------------#
-# Boucle principale du programme                #
+# Boucle principale du programme                #2
 #-----------------------------------------------#
 logger.info("[Proto] Programme principal démarré. Le serveur UDP écoute en arrière-plan.")
 logger.warning("[Proto] Programme principal démarré. Appuyez sur Ctrl+C pour arrêter.")
