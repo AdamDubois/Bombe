@@ -14,7 +14,7 @@ import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFrame, QTextEdit
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont
-
+  
 
 # =====================================================#
 #                    Classe Principale                 #
@@ -185,7 +185,7 @@ class MainWindow(QMainWindow):
         self.timer_camera.timeout.connect(self.changer_image_camera_suivante)
         self.timer_camera.start(3000)  # Change toutes les 3 secondes
     
-    
+
     def changer_image_camera(self):
         """Change l'image de fond de la caméra selon l'index actuel"""
         # Récupérer l'index de l'image selon l'ordre défini
