@@ -1,6 +1,21 @@
 import time
 from lib.UDP import UDPListener
 from lib.Log import logger
+from lib.EcranI2C import EcranI2C
+from lib.RFID import RFIDReader
+
+#-----------------------------------------------#
+# Initialisation de l'écran I2C                 #
+#-----------------------------------------------#
+# Créer une instance de l'écran I2C
+ecran = EcranI2C()
+ecran.afficher_texte("Serveur UDP démarré")
+
+#-----------------------------------------------#
+# Initialisation du RFID                        #
+#-----------------------------------------------#
+rfid_reader = RFIDReader()
+rfid_reader.start()
 
 #-----------------------------------------------#
 # Initialisation du listener UDP                #
@@ -9,19 +24,24 @@ from lib.Log import logger
 listener = UDPListener()
 listener.start()
 
-
 #-----------------------------------------------#
 # Boucle principale du programme                #
 #-----------------------------------------------#
 logger.info("[Proto] Programme principal démarré. Le serveur UDP écoute en arrière-plan.")
-
 logger.warning("[Proto] Programme principal démarré. Appuyez sur Ctrl+C pour arrêter.")
 try:
     while True:
         time.sleep(1)
         if listener.last_command:
             logger.warning(f"[Proto] Dernière commande: {listener.last_command}")
+            ecran.afficher_texte(f"Cmd: {listener.last_command}")
             listener.last_command = None
+
+        id, text = rfid_reader.get_data()
+        if id is not None:
+            logger.warning(f"[Proto] RFID détecté: ID={id}, Texte={text}")
+            ecran.afficher_texte(f"RFID ID:{id}\n{text}")
+            rfid_reader.clear_data()
 
 
 #-----------------------------------------------#
