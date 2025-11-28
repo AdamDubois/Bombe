@@ -94,3 +94,8 @@ LED_STRIP_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 #Pin definitions for buttons
 BUTTON_G_PIN = 15          # Pin GPIO utilisé pour le bouton à gauche
 BUTTON_D_PIN = 13          # Pin GPIO utilisé pour le bouton à droite
+#---------------------------------------------------------------------------------------------------------------------------------------#
+#                                                                                                                                       #<0x0A"># Debug Mode                                                                                                                            #
+#                                                                                                                                       #
+#---------------------------------------------------------------------------------------------------------------------------------------#
+DEBUG_MODE = True  # Change to False to disable debug messages
