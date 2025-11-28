@@ -240,7 +240,7 @@ class MainWindow(QMainWindow):
 
 
 def main():
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv) 
     window = MainWindow() 
     
     # Pour prendre TOUT l'écran et cacher la barre de tâches du système
