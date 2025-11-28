@@ -10,14 +10,19 @@ class RFIDReader(threading.Thread):
         self.text = None
         self.lock = threading.Lock()
         self.running = True
+        self.paused = False  # Flag pour mettre en pause la lecture
 
     def run(self):
         while self.running:
-            id, text = self.reader.read_no_block()
-            if id is not None:
-                with self.lock:
-                    self.id = id
-                    self.text = text.strip()
+            # Ne lis que si le lecteur n'est pas en pause
+            if not self.paused:
+                id, text = self.reader.read_no_block()
+                if id is not None:
+                    with self.lock:
+                        self.id = id
+                        self.text = text.strip()
+            # Petite pause pour ne pas surcharger le CPU
+            threading.Event().wait(0.1)
 
     def get_data(self):
         with self.lock:
@@ -31,11 +36,14 @@ class RFIDReader(threading.Thread):
     def write_data(self, text):
         self.reader.write(text)
 
-    def get_running(self):
-        return self.running
+    def pause(self):
+        """Met en pause la lecture RFID (le thread continue de tourner)"""
+        self.paused = True
 
-    def set_running(self):
-        self.running = True
+    def resume(self):
+        """Reprend la lecture RFID"""
+        self.paused = False
 
     def stop(self):
+        """Arrête complètement le thread"""
         self.running = False
