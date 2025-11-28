@@ -28,5 +28,14 @@ class RFIDReader(threading.Thread):
             self.id = None
             self.text = None
 
+    def write_data(self, text):
+        self.reader.write(text)
+
+    def get_running(self):
+        return self.running
+
+    def set_running(self):
+        self.running = True
+
     def stop(self):
         self.running = False

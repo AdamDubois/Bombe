@@ -1,8 +1,16 @@
 import time
+import lib.Config as Config
+import RPi.GPIO as GPIO
 from lib.UDP import UDPListener
 from lib.Log import logger
 from lib.EcranI2C import EcranI2C
 from lib.RFID import RFIDReader
+
+#-----------------------------------------------#
+# Configuration initiale du programme           #
+#-----------------------------------------------#
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(Config.BUTTON_G_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 #-----------------------------------------------#
 # Initialisation de l'écran I2C                 #
@@ -42,6 +50,14 @@ try:
             logger.warning(f"[Proto] RFID détecté: ID={id}, Texte={text}")
             ecran.afficher_texte(f"RFID ID:{id}\n{text}")
             rfid_reader.clear_data()
+
+        if GPIO.input(Config.BUTTON_G_PIN) == GPIO.LOW:
+            logger.warning("[Proto] Bouton appuyé ! Écriture sur le RFID...")
+            rfid_reader.stop()
+            rfid_reader.write_data(input("Entrez le texte à écrire sur le RFID: "))
+            rfid_reader.set_running()
+            logger.warning("[Proto] Données écrites sur le RFID.")
+
 
 
 #-----------------------------------------------#
