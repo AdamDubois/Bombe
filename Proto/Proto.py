@@ -5,6 +5,7 @@ from lib.UDP import UDPListener
 from lib.Log import logger
 from lib.EcranI2C import EcranI2C
 from lib.RFID import RFIDReader
+from lib.UART import UART
 
 #-----------------------------------------------#
 # Configuration initiale du programme           #
@@ -32,7 +33,12 @@ listener = UDPListener()
 listener.start()
 
 #-----------------------------------------------#
-# Boucle principale du programme                #2
+# Initialisation du module UART                 #
+#-----------------------------------------------#
+uart_handler = UART()
+
+#-----------------------------------------------#
+# Boucle principale du programme                #
 #-----------------------------------------------#
 logger.info("[Proto] Programme principal démarré. Le serveur UDP écoute en arrière-plan.")
 logger.warning("[Proto] Programme principal démarré. Appuyez sur Ctrl+C pour arrêter.")
@@ -46,6 +52,7 @@ try:
         if listener.last_command:
             logger.warning(f"[Proto] Dernière commande: {listener.last_command}")
             ecran.afficher_texte(f"Cmd: {listener.last_command}", position=(0,0))
+            uart_handler.send_message(listener.last_command)
             listener.last_command = None
 
         id, text = rfid_reader.get_data()
@@ -70,7 +77,12 @@ try:
 #-----------------------------------------------#
 # Gérer l'arrêt propre du programme Ctrl+C
 except KeyboardInterrupt:
+    logger.warning("[Proto] Arrêt demandé par l'utilisateur (Ctrl+C).")
+
+# Dans tous les cas, s'assurer que tout est arrêté correctement
+finally:
     logger.warning("[Proto] Arrêt du programme...")
     listener.stop()
     listener.join(timeout=2)
+    uart_handler.close()
     logger.warning("[Proto] Programme terminé.")
