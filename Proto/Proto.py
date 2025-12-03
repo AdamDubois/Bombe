@@ -52,13 +52,13 @@ try:
         if listener.last_command:
             logger.warning(f"[Proto] Dernière commande: {listener.last_command}")
             ecran.afficher_texte(f"Cmd: {listener.last_command}", position=(0,0))
-            uart_handler.send_message(listener.last_command)
             listener.last_command = None
 
         id, text = rfid_reader.get_data()
         if id is not None:
             logger.warning(f"[Proto] RFID détecté: ID={id}, Texte={text}")
             ecran.afficher_texte(f"RFID ID:{id}\n{text}", position=(0, 16))
+            uart_handler.send_message(text)
             rfid_reader.clear_data()
 
         if GPIO.input(Config.BUTTON_G_PIN) == GPIO.LOW:

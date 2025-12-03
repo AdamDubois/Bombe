@@ -2,7 +2,7 @@ import serial
 import os
 
 class UART:
-    def __init__(self, port='/dev/serial0', baudrate=9600, timeout=1):
+    def __init__(self, port='/dev/serial0', baudrate=115200, timeout=1):
         # Vérifier si le port existe et est accessible
         if not os.path.exists(port):
             raise FileNotFoundError(f"Le port {port} n'existe pas")
@@ -25,8 +25,11 @@ class UART:
             raise serial.SerialException(f"Erreur série: {e}")
 
     def send_message(self, message):
-        message_str = str(message) + '\n'  # Ajouter un saut de ligne à la fin
-        self.uart.write(message_str.encode('utf-8'))
+        try:
+            message_str = str(message)  # Ajouter un saut de ligne à la fin
+            self.uart.write(message_str.encode('utf-8'))
+        except Exception as e:
+            print(f"Erreur lors de l'envoi du message UART: {e}")
 
     def close(self):
         self.uart.close()
