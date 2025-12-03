@@ -5,13 +5,18 @@ from PIL import ImageFont, ImageDraw, Image
 import time
 
 class EcranI2C:
-    def __init__(self, adresse=0x3C, largeur=128, hauteur=64):
+    def __init__(self, adresse=0x3C, largeur=128, hauteur=64, police="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", taille_police=12):
         self.largeur = largeur
         self.hauteur = hauteur
         self.serial = i2c(port=1, address=adresse)
         self.device = ssd1306(self.serial, width=largeur, height=hauteur, mode="1")
-        self.font = ImageFont.load_default()
         self.device.cleanup = False  # Empêche le nettoyage automatique à la fin du script
+
+        # Charger la police TrueType
+        try:
+            self.font = ImageFont.truetype(police, taille_police)
+        except IOError:
+            self.font = ImageFont.load_default()
 
         # Image en mémoire pour garder ce qui est affiché
         self.image_actuelle = Image.new("1", (self.largeur, self.hauteur), 0)
