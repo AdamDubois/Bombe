@@ -9,16 +9,16 @@ uart = serial.Serial(
 )
 
 try:
-    # Envoyer un message
-    message = "Bonjour, UART !\n"
-    uart.write(message.encode('utf-8'))
-    print(f"Message envoyé : {message}")
-
-    # Lire une réponse (si nécessaire)
-    time.sleep(1)  # Attendre un peu pour recevoir une réponse
-    if uart.in_waiting > 0:
-        response = uart.read(uart.in_waiting).decode('utf-8')
-        print(f"Réponse reçue : {response}")
+    # # Envoyer un message
+    # message = "Bonjour, UART !\n"
+    # uart.write(message.encode('utf-8'))
+    # print(f"Message envoyé : {message}")
+    while True:
+        # Lire une réponse (si nécessaire)
+        time.sleep(1)  # Attendre un peu pour recevoir une réponse
+        if uart.in_waiting > 0:
+            response = uart.read(uart.in_waiting).decode('utf-8')
+            print(f"Réponse reçue : {response}")
 
 except Exception as e:
     print(f"Erreur : {e}")
