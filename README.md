@@ -1,4 +1,4 @@
-# Projet Bombe - Système de Désamorçage Interactif
+# Projet Bombe - InXtremis
 
 Un projet Raspberry Pi utilisant RFID, LEDs WS2812, écran OLED et communication pour créer un système de désamorçage de bombe interactif.
 
@@ -6,7 +6,7 @@ Un projet Raspberry Pi utilisant RFID, LEDs WS2812, écran OLED et communication
 
 Ce projet implémente un système de désamorçage de bombe interactif utilisant un Raspberry Pi. Le système combine plusieurs technologies :
 - Lecteur RFID
-- Bande de LEDs WS2812 pour les effets visuels
+- Bande de LEDs WS2812 pour les effets visuels contrôlés par un ESP32-S3 Feather
 - Écran OLED I2C pour l'affichage d'informations
 - Communication UDP pour l'interaction réseau
 - Communication UART série pour le contrôle d'un ESP32-S3 Feather
@@ -16,7 +16,7 @@ Ce projet implémente un système de désamorçage de bombe interactif utilisant
 
 ### Fonctionnalités Principales
 - **Lecture/Écriture RFID** : Authentification et stockage de séquences
-- **Effets LED Programmables** : Animations visuelles (heartbeat, flash, arc-en-ciel)
+- **Effets LED Programmables** : Animations visuelles (heartbeat, flash, arc-en-ciel) contrôlées par ESP32-S3 Feather
 - **Affichage OLED** : Interface utilisateur temps réel
 - **Communication Réseau** : UDP pour contrôle distant
 - **Communication Série** : Interaction avec ESP32-S3 Feather
@@ -52,6 +52,7 @@ Bombe-main/
 - Écran OLED I2C SSD1306 (128x64)
 - Boutons poussoirs (2x)
 - Cartes RFID
+- ESP32-S3 Feather
 
 ### Logiciels Requis
 ```bash
@@ -86,14 +87,14 @@ sudo apt install python3-serial
 
 ### 1. Cloner le Projet
 ```bash
-git clone https://github.com/votre-repo/Bombe-main.git
+git clone https://github.com/AdamDubois/Bombe.git
 cd Bombe-main
 ```
 
 ### 2. Configuration GPIO
 Vérifiez les connexions selon `lib/Config.py` :
 - **RFID** : SPI (MOSI=19, MISO=21, SCK=23, SS=24, RST=22)
-- **LEDs WS2812** : GPIO 18 (PWM)
+- **LEDs WS2812** : GPIO 18 (PWM) (si utilisé par le raspberry pi)
 - **Écran I2C** : SDA=3, SCL=5 (adresse 0x3C)
 - **Boutons** : GPIO 15 (gauche), GPIO 13 (droite)
 
@@ -128,7 +129,7 @@ python3 protoUI.py
 
 ### Configuration GPIO (`lib/Config.py`)
 ```python
-# LEDs WS2812
+# LEDs WS2812 (si utilisé par le Raspberry Pi)
 LED_STRIP_PIN = 18          # GPIO PWM
 LED_STRIP_COUNT = 75        # Nombre de LEDs
 LED_STRIP_BRIGHTNESS = 255  # Luminosité (0-255)
@@ -167,7 +168,7 @@ DEBUG_MODE = True  # Active les logs détaillés
 | MOSI | GPIO 19 | Master Out |
 | MISO | GPIO 21 | Master In |
 | RST | GPIO 22 | Reset |
-| **LEDs WS2812** |
+| **LEDs WS2812 (si utilisé par le Raspberry Pi)** |
 | Data | GPIO 18 | Signal PWM |
 | **Écran I2C** |
 | SDA | GPIO 3 | I2C Data |
@@ -194,6 +195,7 @@ sudo python3 -c "import spidev; print('SPI OK')"
 ```
 
 **LEDs ne s'allument pas**
+(Si utilisé par le Raspberry Pi)
 ```bash
 # Vérifier permissions
 sudo usermod -a -G gpio $USER
@@ -225,4 +227,3 @@ tail -f /var/log/syslog | grep python
 ## Auteurs
 - **Adam Dubois** - Configuration GPIO et hardware
 - **Jeremy Breault** - Interface PyQt5 et UI
-- **Équipe de développement** - Modules RFID, LEDs, communication
