@@ -39,7 +39,13 @@ Bombe-main/
 │   │   ├── UART.py        # Communication série
 │   │   └── Log.py         # Système de logging
 │   └── Proto.py       # Script principal
-├── img/                # Images pour l'interface utilisateur
+├── ESP32/             # Stockage du code ESP32-S3 Feather
+│   ├── lib/               # Bibliothèques ESP32
+│   │   ├── Config.py         # Configuration des GPIO ESP32
+│   │   ├── class_DEL.py      # Contrôle des LEDs WS2812
+│   │   └── UART.py           # Communication série ESP32
+│   └── code.py            # Code principal ESP32-S3 Feather
+├── img/               # Images pour l'interface utilisateur
 └── README.md          # Documentation
 ```
 
