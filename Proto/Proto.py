@@ -36,7 +36,6 @@ ecran = EcranI2C()
 # Initialisation du RFID                        #
 #-----------------------------------------------#
 rfid_reader = RFIDReader()
-rfid_reader.start()
 
 #-----------------------------------------------#
 # Initialisation du listener UDP                #
@@ -65,6 +64,10 @@ try:
         if listener.last_command:
             logger.warning(f"[Proto] Dernière commande: {listener.last_command}")
             ecran.afficher_texte(f"Cmd: {listener.last_command}", position=(0,0))
+            if listener.last_command == b'LED=1\n':
+                uart_handler.send_message("ON")
+            elif listener.last_command == b'LED=0\n':
+                uart_handler.send_message("OFF")
             listener.last_command = None
 
         if rfid_reader.id is not None:

@@ -19,15 +19,16 @@ __status__ = "Production"
 import RPi.GPIO as GPIO
 import lib.Config as Config
 import threading
-import time
 
 class Bouton(threading.Thread):
-    bouton_Gauche_appuye = False # Indicateur d'appui sur le bouton gauche
-    bouton_Droite_appuye = False # Indicateur d'appui sur le bouton droit
-
-    """Initialisation des broches GPIO pour les boutons et démarrage du thread de lecture."""
+    """Classe pour gérer les boutons via GPIO dans un thread séparé."""
     def __init__(self):
-        super().__init__(daemon=True)
+        """Initialisation des broches GPIO pour les boutons et démarrage du thread de lecture."""
+        super().__init__(daemon=True) # Thread en mode daemon pour s'arrêter avec le programme principal
+
+        self.bouton_Droite_appuye = False # Variable publique pour indiquer l'état du bouton droit
+        self.bouton_Gauche_appuye = False # Variable publique pour indiquer l'état du bouton gauche
+
         GPIO.setmode(GPIO.BOARD) # Utilisation de la numérotation physique des broches
         self.bouton_Gauche_pin = Config.BUTTON_G_PIN
         GPIO.setup(self.bouton_Gauche_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Configuration en entrée avec résistance de pull-up
@@ -38,16 +39,17 @@ class Bouton(threading.Thread):
         self.running = True
         self.start()
 
-    """Boucle principale du thread pour lire l'état des boutons."""
     def run(self):
+        """Boucle principale du thread pour lire l'état des boutons."""
         while self.running:
-            time.sleep(0.1)  # Petite pause pour éviter une boucle trop rapide
             if GPIO.input(self.bouton_Gauche_pin) == GPIO.LOW:
                 self.bouton_Gauche_appuye = True
 
             if GPIO.input(self.bouton_Droite_pin) == GPIO.LOW:
                 self.bouton_Droite_appuye = True
 
-    """Arrêt du thread de lecture des boutons."""
+            threading.Event().wait(0.1)  # Petite pause pour éviter une boucle trop rapide
+
     def stop(self):
+        """Arrêt du thread de lecture des boutons."""
         self.running = False

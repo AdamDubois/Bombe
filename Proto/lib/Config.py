@@ -114,3 +114,15 @@ RFID_SS_PIN = 24            # Pin GPIO utilisé pour la sélection de puce (Slav
 #Pin definitions for buttons
 BUTTON_G_PIN = 15          # Pin GPIO utilisé pour le bouton à gauche
 BUTTON_D_PIN = 13          # Pin GPIO utilisé pour le bouton à droite
+
+#--------------------------------------------------------------------------#
+
+# OLED I2C Screen
+#I2C address for the OLED screen
+OLED_I2C_ADDRESS = 0x3C    # Adresse I2C de l'écran OLED
+OLED_I2C_WIDTH = 128         # Largeur de l'écran OLED en pixels
+OLED_I2C_HEIGHT = 64         # Hauteur de l'écran OLED en pixels
+
+#Font settings for the OLED screen
+OLED_FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # Chemin vers la police TrueType
+OLED_FONT_SIZE = 12          # Taille de la police pour l'écran OLED

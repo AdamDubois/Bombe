@@ -3,6 +3,8 @@
 """
 Fichier : UART.py
 Description: Class pour la gestion de la communication UART.
+    - Permet d'envoyer des messages via UART.
+    - Permet de fermer la connexion UART.
 """
 __author__ = "Adam Dubois et Jérémy Breault"
 __version__ = "1.0.1"
@@ -16,7 +18,9 @@ import serial
 import os
 
 class UART:
+    """Classe pour gérer la communication UART."""
     def __init__(self, port='/dev/serial0', baudrate=115200, timeout=1):
+        """Initialisation de la connexion UART."""
         # Vérifier si le port existe et est accessible
         if not os.path.exists(port):
             raise FileNotFoundError(f"Le port {port} n'existe pas")
@@ -39,6 +43,7 @@ class UART:
             raise serial.SerialException(f"Erreur série: {e}")
 
     def send_message(self, message):
+        """Envoie un message via UART."""
         try:
             message_str = str(message)  # Ajouter un saut de ligne à la fin
             self.uart.write(message_str.encode('utf-8'))
@@ -46,4 +51,5 @@ class UART:
             print(f"Erreur lors de l'envoi du message UART: {e}")
 
     def close(self):
+        """Ferme la connexion UART."""
         self.uart.close()
