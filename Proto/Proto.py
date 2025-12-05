@@ -13,19 +13,18 @@ __status__ = "Production"
 
 
 import time
-import lib.Config as Config
 import RPi.GPIO as GPIO
-from lib.UDP import UDPListener
+from lib.Class_UDP import UDPListener
+from lib.Class_EcranI2C import EcranI2C
+from lib.Class_RFID import RFIDReader
+from lib.Class_UART import UART
+from lib.Class_Bouton import Bouton
 from lib.Log import logger
-from lib.EcranI2C import EcranI2C
-from lib.RFID import RFIDReader
-from lib.UART import UART
 
 #-----------------------------------------------#
 # Configuration initiale du programme           #
 #-----------------------------------------------#
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(Config.BUTTON_G_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+boutons = Bouton()
 
 #-----------------------------------------------#
 # Initialisation de l'écran I2C                 #
@@ -68,14 +67,13 @@ try:
             ecran.afficher_texte(f"Cmd: {listener.last_command}", position=(0,0))
             listener.last_command = None
 
-        id, text = rfid_reader.get_data()
-        if id is not None:
-            logger.warning(f"[Proto] RFID détecté: ID={id}, Texte={text}")
-            ecran.afficher_texte(f"RFID ID:{id}\n{text}", position=(0, 16))
-            uart_handler.send_message(text)
+        if rfid_reader.id is not None:
+            logger.warning(f"[Proto] RFID détecté: ID={rfid_reader.id}, Texte={rfid_reader.text}")
+            ecran.afficher_texte(f"RFID ID:{rfid_reader.id}\n{rfid_reader.text}", position=(0, 16))
+            uart_handler.send_message(rfid_reader.text)
             rfid_reader.clear_data()
 
-        if GPIO.input(Config.BUTTON_G_PIN) == GPIO.LOW:
+        if boutons.bouton_Gauche_appuye:
             logger.warning("[Proto] Bouton appuyé !")
             rfid_reader.pause()  # Mets en pause la lecture, ne l'arrête pas complètement
             msg = input("[Proto] Entrez le texte à écrire sur le RFID: ")
@@ -83,6 +81,7 @@ try:
             rfid_reader.write_data(msg)
             rfid_reader.resume()  # Reprend la lecture
             logger.warning("[Proto] Données écrites sur le RFID.")
+            boutons.bouton_Gauche_appuye = False
 
 
 
@@ -96,7 +95,13 @@ except KeyboardInterrupt:
 # Dans tous les cas, s'assurer que tout est arrêté correctement
 finally:
     logger.warning("[Proto] Arrêt du programme...")
-    listener.stop()
-    listener.join(timeout=2)
-    uart_handler.close()
+    listener.stop() # Arrête le listener UDP
+    listener.join(timeout=2) # Attend la fin du thread UDP
+    uart_handler.close() # Ferme le port UART
+    boutons.stop() # Arrête le thread des boutons
+    boutons.join(timeout=2) # Attend la fin du thread des boutons
+    rfid_reader.stop() # Arrête le thread RFID
+    rfid_reader.join(timeout=2) # Attend la fin du thread RFID
+    ecran.effacer_ecran() # Efface l'écran avant de quitter
+    GPIO.cleanup() # Nettoie les configurations GPIO
     logger.warning("[Proto] Programme terminé.")

@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : UART.py
+Description: Class pour la gestion de la communication UART.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import serial
 import os
 

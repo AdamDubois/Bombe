@@ -1,7 +1,16 @@
-# File: Config.py
-# Description: Configuration file for GPIO pin definitions for hardware components and other settings.
-# Author: Adam Dubois
-# Date: 11 Novembre 2025
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : Config.py
+Description: Fichier de configuration pour les définitions des pins GPIO pour les composants matériels et autres paramètres.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 
 # The GPIO pin definitions for the hardware components
 # So, for example, GPIO 1 is the pin 28 on the Raspberry Pi header
@@ -87,17 +96,17 @@ RFID_SS_PIN = 24            # Pin GPIO utilisé pour la sélection de puce (Slav
 
 #--------------------------------------------------------------------------#
 
-# LED Strip
+# LED Strip (Si les LED sont controlées via le Raspberry Pi)
 #Pin definition for the LED strip data line
-LED_STRIP_PIN = 18          # Pin GPIO utilisé pour contrôler les LEDs (doit être PWM)
+#LED_STRIP_PIN = 18          # Pin GPIO utilisé pour contrôler les LEDs (doit être PWM)
 
 #Configuration for the LED strip
-LED_STRIP_COUNT = 75        # Nombre de LEDs dans la bande (ajustez selon votre bande)
-LED_STRIP_FREQ_HZ = 800000  # Fréquence du signal LED en hertz (800khz)
-LED_STRIP_DMA = 10          # Canal DMA à utiliser pour générer le signal (essayez 10)
-LED_STRIP_BRIGHTNESS = 255  # Luminosité des LEDs (0-255)
-LED_STRIP_INVERT = False    # True pour inverser le signal (quand on utilise un transistor NPN)
-LED_STRIP_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+#LED_STRIP_COUNT = 75        # Nombre de LEDs dans la bande (ajustez selon votre bande)
+#LED_STRIP_FREQ_HZ = 800000  # Fréquence du signal LED en hertz (800khz)
+#LED_STRIP_DMA = 10          # Canal DMA à utiliser pour générer le signal (essayez 10)
+#LED_STRIP_BRIGHTNESS = 255  # Luminosité des LEDs (0-255)
+#LED_STRIP_INVERT = False    # True pour inverser le signal (quand on utilise un transistor NPN)
+#LED_STRIP_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 #--------------------------------------------------------------------------#
 

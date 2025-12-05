@@ -1,4 +1,17 @@
-import RPi.GPIO as GPIO
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : RFID.py
+Description: Class pour la gestion du lecteur RFID.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 from lib.mfrc522 import SimpleMFRC522
 import threading
 
@@ -18,20 +31,14 @@ class RFIDReader(threading.Thread):
             if not self.paused:
                 id, text = self.reader.read_no_block()
                 if id is not None:
-                    with self.lock:
-                        self.id = id
-                        self.text = text.strip()
+                    self.id = id
+                    self.text = text.strip()
             # Petite pause pour ne pas surcharger le CPU
             threading.Event().wait(0.1)
-
-    def get_data(self):
-        with self.lock:
-            return self.id, self.text
         
     def clear_data(self):
-        with self.lock:
-            self.id = None
-            self.text = None
+        self.id = None
+        self.text = None
 
     def write_data(self, text):
         self.reader.write(text)

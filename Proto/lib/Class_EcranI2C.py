@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : EcranI2C.py
+Description: Class pour la gestion de l'écran OLED via I2C.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from luma.core.render import canvas
