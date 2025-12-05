@@ -16,10 +16,11 @@ __status__ = "Production"
 
 import serial
 import os
+import lib.Config as Config
 
 class UART:
     """Classe pour gérer la communication UART."""
-    def __init__(self, port='/dev/serial0', baudrate=115200, timeout=1):
+    def __init__(self, port=Config.UART_PORT, baudrate=Config.UART_BAUDRATE, timeout=1):
         """Initialisation de la connexion UART."""
         # Vérifier si le port existe et est accessible
         if not os.path.exists(port):

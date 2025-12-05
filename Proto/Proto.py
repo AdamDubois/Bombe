@@ -42,7 +42,6 @@ rfid_reader = RFIDReader()
 #-----------------------------------------------#
 # Démarrer le listener UDP
 listener = UDPListener()
-listener.start()
 
 #-----------------------------------------------#
 # Initialisation du module UART                 #
@@ -67,7 +66,7 @@ try:
             if listener.last_command == b'LED=1\n':
                 uart_handler.send_message("ON")
             elif listener.last_command == b'LED=0\n':
-                uart_handler.send_message("OFF")
+                uart_handler.send_message("MAGENTA")
             listener.last_command = None
 
         if rfid_reader.id is not None:

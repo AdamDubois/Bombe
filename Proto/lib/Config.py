@@ -3,6 +3,9 @@
 """
 Fichier : Config.py
 Description: Fichier de configuration pour les définitions des pins GPIO pour les composants matériels et autres paramètres.
+    - Définitions des pins GPIO pour les composants matériels (SPI, RFID, Boutons, Écran I2C).
+    - Paramètres de configuration logicielle (mode debug, port UDP, adresse UDP, UART).
+    - La configuration des bandes LED est commentée car elle dépend de l'utilisation de la bibliothèque rpi_ws281x ou le contrôle via un microcontrôleur externe et UART.
 """
 __author__ = "Adam Dubois et Jérémy Breault"
 __version__ = "1.0.1"
@@ -70,6 +73,10 @@ GPIO27 = 13
 #                                                                                                                                       #
 #---------------------------------------------------------------------------------------------------------------------------------------#
 DEBUG_MODE = False  # Change to False to disable debug messages
+
+#--------------------------------------------------------------------------#
+
+# UDP Configuration
 UDP_LISTEN_PORT = 12345  # Port to listen for UDP messages
 UDP_ADDRESS = "0.0.0.0"  # Address to bind the UDP listener
 
@@ -126,3 +133,9 @@ OLED_I2C_HEIGHT = 64         # Hauteur de l'écran OLED en pixels
 #Font settings for the OLED screen
 OLED_FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # Chemin vers la police TrueType
 OLED_FONT_SIZE = 12          # Taille de la police pour l'écran OLED
+
+#--------------------------------------------------------------------------#
+
+# UART Configuration
+UART_PORT = "/dev/serial0"  # Port série UART à utiliser
+UART_BAUDRATE = 115200        # Vitesse de communication UART
