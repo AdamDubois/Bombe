@@ -1,6 +1,24 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : RFIDLED.py
+Description: Code de test pour le lecteur RFID MFRC522 avec effets lumineux via une bande de LEDs WS2812.
+    - Lit les cartes RFID et affiche l'ID et le texte.
+    - Change les effets lumineux de la bande de LEDs en fonction du texte lu sur la carte RFID.
+    - Utilise un thread pour lire les cartes RFID de manière non bloquante.
+    - Gère les interruptions et nettoie correctement les ressources GPIO à la fin.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import RPi.GPIO as GPIO
 from lib.mfrc522 import SimpleMFRC522
-import code.Code_Test.lib.class_DEL as class_DEL
+import lib.class_DEL as class_DEL
 import threading
 import time
 
@@ -40,8 +58,6 @@ thread.start()
 # Boucle principale (non bloquante)
 try:
     while True:
-        # Ici, tu peux faire autre chose en parallèle
-        # Par exemple, vérifier si une nouvelle carte a été lue
         with data_lock:
             if last_text is not None and last_text != last_couleur:
                 print(f"[Main] Mise à jour LEDs avec : {last_text}")

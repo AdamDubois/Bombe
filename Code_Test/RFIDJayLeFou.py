@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : RFIDJayLeFou.py
+Description: Code de test pour le lecteur RFID MFRC522 avec effets lumineux via une bande de LEDs WS2812.
+    - Lit les cartes RFID et affiche l'ID et le texte.
+    - Permet d'écrire de nouvelles données sur la carte RFID en appuyant sur un bouton poussoir.
+    - Change les effets lumineux de la bande de LEDs en fonction du texte lu sur la carte RFID.
+    - Utilise un thread pour gérer les effets lumineux de manière fluide.
+    - Gère les interruptions et nettoie correctement les ressources GPIO à la fin.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import RPi.GPIO as GPIO
 from lib.mfrc522 import SimpleMFRC522
 import lib.class_DEL as class_DEL

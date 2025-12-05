@@ -1,9 +1,19 @@
-#!/usr/bin/env python3
-# env: python3 PyQt5
-# Auteur: Jeremy Breault
-# Date: 2025-10-17
-# Description: Code principale pour le fonctionnement de l'interface utilisateur
-#              Gère l'integration de la console dite "hacker" dans une fenetre PyQt5.
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : protoUI.py
+Description: Code de test pour l'interface utilisateur PyQt5.
+    - Crée une fenêtre principale avec un style sombre.
+    - Affiche un titre et une console de style "hacker" avec des commandes qui défilent.
+    - Intègre une section pour afficher des images de caméra qui changent périodiquement.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 
 # =====================================================#
 #                        Imports                       #

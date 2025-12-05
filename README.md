@@ -5,6 +5,7 @@ Un projet Raspberry Pi utilisant RFID, LEDs WS2812, écran OLED et communication
 ## Description
 
 Ce projet implémente un système de désamorçage de bombe interactif utilisant un Raspberry Pi. Le système combine plusieurs technologies :
+- Boutons poussoirs pour l'interaction utilisateur
 - Lecteur RFID
 - Bande de LEDs WS2812 pour les effets visuels contrôlés par un ESP32-S3 Feather
 - Écran OLED I2C pour l'affichage d'informations
@@ -15,36 +16,51 @@ Ce projet implémente un système de désamorçage de bombe interactif utilisant
 ## Fonctionnalités
 
 ### Fonctionnalités Principales
-- **Lecture/Écriture RFID** : Authentification et stockage de séquences
+- **Lecture/Écriture RFID** : Authentification et stockage de séquences (threaded, non-bloquant)
 - **Effets LED Programmables** : Animations visuelles (heartbeat, flash, arc-en-ciel) contrôlées par ESP32-S3 Feather
-- **Affichage OLED** : Interface utilisateur temps réel
-- **Communication Réseau** : UDP pour contrôle distant
-- **Communication Série** : Interaction avec ESP32-S3 Feather
+- **Affichage OLED** : Interface utilisateur temps réel avec écran I2C
+- **Communication Réseau** : Serveur UDP pour contrôle distant
+- **Communication Série** : Interface UART avec ESP32-S3 Feather
+- **Gestion de Boutons** : Interface utilisateur physique avec threads
 - **Interface Graphique** : Console style "hacker" avec PyQt5
+- **Système de Logging** : Traçabilité complète des événements
 
 ## Architecture du Projet
 
 ```
 Bombe-main/
 ├── Code_Test/          # Scripts de test et développement
-|   ├── pi-rfid/       # Utilitaires RFID basiques
-│   ├── lib/           # Bibliothèques de test
-│   └── *.py           # Scripts de test individuels
+│   ├── pi-rfid/           # Utilitaires RFID basiques
+│   ├── lib/               # Bibliothèques de test
+│   │   ├── class_DEL.py       # Classe LED WS2812
+│   │   ├── Config.py          # Configuration test
+│   │   └── mfrc522/           # Module RFID
+│   ├── Demo_DEL_JayLeFou.py   # Test animations LED
+│   ├── I2C_Ecran.py           # Test écran OLED
+│   ├── RFIDReadWrite.py       # Test RFID lecture/écriture
+│   ├── RFIDNoBlock.py         # Test RFID non-bloquant
+│   ├── TestBouton.py          # Test boutons
+│   ├── UART.py                # Test communication série
+│   ├── UDP.py                 # Test communication UDP
+│   ├── protoUI.py             # Interface graphique PyQt5
+│   └── test_threads.py        # Test multithreading
 ├── Proto/             # Version prototype principale
 │   ├── lib/           # Modules principaux
-│   │   ├── Config.py      # Configuration GPIO/Hardware
-│   │   ├── RFID.py        # Gestion RFID threaded
-│   │   ├── EcranI2C.py    # Contrôle écran OLED
-│   │   ├── UDP.py         # Communication réseau
-│   │   ├── UART.py        # Communication série
-│   │   └── Log.py         # Système de logging
+│   │   ├── Config.py          # Configuration GPIO/Hardware
+│   │   ├── Class_RFID.py      # Gestion RFID threaded
+│   │   ├── Class_EcranI2C.py  # Contrôle écran OLED
+│   │   ├── Class_UDP.py       # Communication réseau
+│   │   ├── Class_UART.py      # Communication série
+│   │   ├── Class_Bouton.py    # Gestion boutons threaded
+│   │   ├── Log.py             # Système de logging
+│   │   └── mfrc522/           # Module RFID
 │   └── Proto.py       # Script principal
-├── ESP32/             # Stockage du code ESP32-S3 Feather
+├── ESP32/             # Code pour ESP32-S3 Feather
 │   ├── lib/               # Bibliothèques ESP32
-│   │   ├── Config.py         # Configuration des GPIO ESP32
-│   │   ├── class_DEL.py      # Contrôle des LEDs WS2812
+│   │   ├── Config.py         # Configuration GPIO ESP32
+│   │   ├── class_DEL.py      # Contrôle LEDs WS2812
 │   │   └── UART.py           # Communication série ESP32
-│   └── code.py            # Code principal ESP32-S3 Feather
+│   └── code.py            # Code principal CircuitPython
 ├── img/               # Images pour l'interface utilisateur
 └── README.md          # Documentation
 ```
@@ -86,7 +102,6 @@ sudo apt-get install fonts-dejavu #(Pour la font avec les accents)
 
 # Bibliothèque pour la communication UART
 sudo apt install python3-serial
-
 ```
 
 ## Installation
@@ -116,19 +131,32 @@ sudo python3 Proto.py
 ```bash
 cd Code_Test
 
-# Test RFID
+# Test RFID non-bloquant
 sudo python3 RFIDNoBlock.py
 
-# Test LEDs
+# Test RFID lecture/écriture avec threading
+sudo python3 RFIDReadWrite.py
+
+# Test LEDs avec animations
 sudo python3 Demo_DEL_JayLeFou.py
 
-# Test Écran
+# Test Écran OLED I2C
 python3 I2C_Ecran.py
 
-# Interface Graphique
+# Test Boutons GPIO
+sudo python3 TestBouton.py
+
+# Test Communication UART
+python3 UART.py
+
+# Test Communication UDP
+python3 UDP.py
+
+# Interface Graphique PyQt5
 python3 protoUI.py
 
-# etc.
+# Test Threading
+python3 test_threads.py
 ```
 
 ## Configuration
@@ -154,6 +182,10 @@ BUTTON_D_PIN = 13          # Bouton droite
 # Communication
 UDP_LISTEN_PORT = 12345    # Port UDP
 UDP_ADDRESS = "0.0.0.0"    # Interface d'écoute
+
+# UART
+UART_PORT = "/dev/serial0"  # Port série
+UART_BAUDRATE = 115200      # Vitesse de communication
 ```
 
 ### Mode Debug

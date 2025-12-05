@@ -1,3 +1,25 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : New_RFID_ReadWrite.py
+Description: Code de test pour la lecture et l'écriture RFID utilisant la bibliothèque lib.Class_RFID.
+    - Initialise le lecteur RFID.
+    - Lit l'UID de la carte RFID présente.
+    - Écrit des données sur la carte RFID.
+    - Lit et affiche les données écrites pour vérification.
+    - Utilise des threads pour gérer la lecture RFID de manière non bloquante.
+    - Permet d'interrompre le programme proprement avec Ctrl+C.
+    - Contrôle les LEDs WS2812 pour indiquer l'état de la lecture/écriture.
+    - Implémente un verrou pour la gestion des données partagées entre threads.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import RPi.GPIO as GPIO
 from lib.mfrc522 import SimpleMFRC522
 import lib.class_DEL as class_DEL

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 #coding: utf-8
 """
-Script de test pour déterminer les capacités de threading du Raspberry Pi 4
-Teste différents types de threads et mesure les performances
+Fichier : test_threads.py
+Description: Script de test pour déterminer les capacités de threading du Raspberry Pi 4
+    - Teste différents types de threads et mesure les performances
 """
 __author__ = "GitHub Copilot"
 __version__ = "1.0.0"
 __date__ = "2025-12-05"
+
 
 import threading
 import time

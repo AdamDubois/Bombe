@@ -1,6 +1,16 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Version simple pour obtenir la résolution de l'écran
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : resolution_simple.py
+Description: Code simple pour obtenir la résolution de l'écran.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 
 def get_resolution():
     """Fonction simple pour obtenir la résolution de l'écran"""

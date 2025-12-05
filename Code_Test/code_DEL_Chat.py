@@ -1,3 +1,21 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : code_DEL_Chat.py
+Description: Code généré par ChatGPT pour contrôler une bande de LEDs WS2812 avec un Raspberry Pi.
+    - Utilise la bibliothèque rpi_ws281x pour gérer les LEDs.
+    - Implémente plusieurs animations de lumière, y compris des effets de balayage de couleurs, de théâtre et d'arc-en-ciel.
+    - Permet d'interrompre le programme proprement avec Ctrl+C.
+    - Configure les paramètres de la bande LED tels que le nombre de LEDs, le pin GPIO, la fréquence, la luminosité, etc.
+"""
+__author__ = "ChatGPT"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import time
 from lib.rpi_ws281x import PixelStrip, Color
 

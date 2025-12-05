@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : jeu_DEL.py
+Description: Code de test pour les animations des LEDs WS2812.
+    - Utilise la bibliothèque rpi_ws281x pour contrôler les LEDs.
+    - Implémente plusieurs animations : colorWipe, theaterChase, rainbow, rainbowCycle,
+        theaterChaseRainbow, couleurUnique, respire, flash, heartbeat, police, jaylefou.
+    - N'effectue aucune action à la fin du script pour permettre l'observation des effets.
+    - Il s'agit d'un module de fonctions réutilisables pour les animations LED.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import time
 from rpi_ws281x import PixelStrip, Color
 
