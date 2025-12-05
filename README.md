@@ -265,3 +265,9 @@ tail -f /var/log/syslog | grep python
 ## Auteurs
 - **Adam Dubois** - Configuration GPIO et hardware
 - **Jeremy Breault** - Interface PyQt5 et UI
+
+## Collaborateurs
+- **ChatGPT** - Assistance à la rédaction de la documentation et du code
+- **Grok** - Assistance à la rédaction de la documentation et du code
+- **Copilot** - Assistance à la rédaction de la documentation et du code
+- **Warp** - Assistance à la rédaction de la documentation et du code
