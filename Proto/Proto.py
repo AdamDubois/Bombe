@@ -64,9 +64,9 @@ try:
             logger.warning(f"[Proto] Dernière commande: {listener.last_command}")
             ecran.afficher_texte(f"Cmd: {listener.last_command}", position=(0,0))
             if listener.last_command == b'LED=1\n':
-                uart_handler.send_message("ON")
+                uart_handler.send_message("SOLID_WHITE")
             elif listener.last_command == b'LED=0\n':
-                uart_handler.send_message("MAGENTA")
+                uart_handler.send_message("OFF")
             listener.last_command = None
 
         if rfid_reader.id is not None:
