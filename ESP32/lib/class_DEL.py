@@ -1,3 +1,22 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : class_DEL.py
+Description: Class pour la gestion de la bande de LEDs WS2812.
+    - Utilise la bibliothèque rpi_ws281x pour contrôler les LEDs.
+    - Fournit des méthodes pour définir les couleurs, démarrer des animations et gérer les effets visuels.
+    - Gère les animations de manière asynchrone pour permettre une intégration fluide avec d'autres composants.
+    - Supporte plusieurs animations prédéfinies et commandes de couleur.
+    - Gère les interruptions et nettoie correctement les ressources à la fin.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import asyncio
 import neopixel
 import Config
