@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : Proto.py
+Description: Programme principal pour gérer les interactions entre les composants matériels via GPIO, I2C, SPI, UART et UDP.
+"""
+__author__ = "Adam Dubois et Jérémy Breault"
+__version__ = "1.0.1"
+__date__ = "2025-12-05"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
+
 import time
 import lib.Config as Config
 import RPi.GPIO as GPIO
