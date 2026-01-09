@@ -24,6 +24,9 @@ import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFrame, QTextEdit
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont
+
+import os
+os.environ['DISPLAY'] = ':0'
   
 
 # =====================================================#
