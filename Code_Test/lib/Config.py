@@ -94,3 +94,19 @@ LED_STRIP_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 #Pin definitions for buttons
 BUTTON_G_PIN = 15          # Pin GPIO utilisé pour le bouton à gauche
 BUTTON_D_PIN = 13          # Pin GPIO utilisé pour le bouton à droite
+
+#--------------------------------------------------------------------------#
+
+# Keypad
+#Pin definitions for the keypad matrix
+KEYPAD_ROW_PINS = [4, 17, 27, 22]
+KEYPAD_COL_PINS = [5, 6, 13, 19]
+# Keypad button mapping
+KEYPAD_BUTTONS = [
+    ['1', '2', '3', 'A'],
+    ['4', '5', '6', 'B'],
+    ['7', '8', '9', 'C'],
+    ['*', '0', '#', 'D']
+]
+
+#--------------------------------------------------------------------------#
