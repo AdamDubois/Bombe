@@ -1,28 +1,19 @@
 # Projet Bombe - InXtremis
 
-Un projet Raspberry Pi utilisant RFID, LEDs WS2812, écran OLED et communication pour créer un système de désamorçage de bombe interactif.
-
 ## Description
 
-Ce projet implémente un système de désamorçage de bombe interactif utilisant un Raspberry Pi. Le système combine plusieurs technologies :
-- Boutons poussoirs pour l'interaction utilisateur
-- Lecteur RFID
-- Bande de LEDs WS2812 pour les effets visuels contrôlés par un ESP32-S3 Feather
-- Écran OLED I2C pour l'affichage d'informations
-- Communication UDP pour l'interaction réseau
-- Communication UART série pour le contrôle d'un ESP32-S3 Feather
-- Interface utilisateur PyQt5 avec console style "hacker"
+Un projet Raspberry Pi utilisant RFID, LEDs WS2812, écran OLED et différentes communication pour créer un système de désamorçage de bombe interactif. Pour l'instant, il n'y a pas de système de désamorçage, il n'y a que les différents codes pour tester les composantes qui sont utilisées.
 
 ## Fonctionnalités
 
-### Fonctionnalités Principales
-- **Lecture/Écriture RFID** : Authentification et stockage de séquences (threaded, non-bloquant)
-- **Effets LED Programmables** : Animations visuelles (heartbeat, flash, arc-en-ciel) contrôlées par ESP32-S3 Feather
+### Fonctionnalités principales
+- **Lecture/Écriture RFID** : Authentification et stockage de séquences (threaded, non bloquant)
+- **Effets DEL programmables** : Animations visuelles (heartbeat, flash, arc-en-ciel) contrôlées par ESP32-S3 Feather
 - **Affichage OLED** : Interface utilisateur temps réel avec écran I2C
 - **Communication Réseau** : Serveur UDP pour contrôle distant
 - **Communication Série** : Interface UART avec ESP32-S3 Feather
-- **Gestion de Boutons** : Interface utilisateur physique avec threads
-- **Interface Graphique** : Console style "hacker" avec PyQt5
+- **Gestion de boutons** : Interface utilisateur physique avec Threads
+- **Interface graphique** : Console style "hacker" avec PyQt5
 - **Système de Logging** : Traçabilité complète des événements
 
 ## Architecture du Projet
@@ -67,16 +58,45 @@ Bombe-main/
 
 ## Prérequis
 
-### Matériel Requis
+### Matériel requis
 - Raspberry Pi
 - Module RFID MFRC522
-- Bande LED WS2812 (75 LEDs)
+- Bande DEL WS2812 (75 LEDs)
 - Écran OLED I2C SSD1306 (128x64)
-- Boutons poussoirs (2x)
+- Bouton-poussoir (2x)
 - Cartes RFID
 - ESP32-S3 Feather
 
-### Logiciels Requis
+### Logiciels requis
+- python3
+- python3-pip
+- python3-dev
+- python3-venv
+- python3-spidev
+- python3-smbus
+- python3-pil
+- python3-serial
+- git
+- i2c-tools
+- libfreetype6-dev
+- libjpeg-dev
+- build-essential
+- luma.core
+- luma.oled
+- fonts-dejavu
+
+## Installation
+
+### 1. Cloner le Projet
+```bash
+git clone https://github.com/AdamDubois/Bombe.git
+cd Bombe-main
+```
+
+### 2. Configuration GPIO
+Vérifiez les connexions selon `lib/Config.py`
+
+### 3. Logiciels requis
 ```bash
 #-----------------------------------------------#
 # Système                                       #
@@ -104,24 +124,9 @@ sudo apt-get install fonts-dejavu #(Pour la font avec les accents)
 sudo apt install python3-serial
 ```
 
-## Installation
-
-### 1. Cloner le Projet
-```bash
-git clone https://github.com/AdamDubois/Bombe.git
-cd Bombe-main
-```
-
-### 2. Configuration GPIO
-Vérifiez les connexions selon `lib/Config.py` :
-- **RFID** : SPI (MOSI=19, MISO=21, SCK=23, SS=24, RST=22)
-- **LEDs WS2812** : GPIO 18 (PWM) (si utilisé par le raspberry pi)
-- **Écran I2C** : SDA=3, SCL=5 (adresse 0x3C)
-- **Boutons** : GPIO 15 (gauche), GPIO 13 (droite)
-
 ## Utilisation
 
-### Mode Prototype (Toutes les fonctionnalités en un seul script)
+### Mode Prototype (toutes les fonctionnalités en un seul script)
 ```bash
 cd Proto
 sudo python3 Proto.py
@@ -194,17 +199,17 @@ UART_BAUDRATE = 115200      # Vitesse de communication
 DEBUG_MODE = True  # Active les logs détaillés
 ```
 
-## Composants Matériels
+## Composants matériels
 
 ### Schéma de Connexion GPIO
 
 | Composant | GPIO/Pin | Fonction |
 |-----------|----------|----------|
 | **RFID MFRC522** |
-| SDA/SS | GPIO 24 | Slave Select |
+| SDA/SS | GPIO 24 | Slave select |
 | SCK | GPIO 23 | SPI Clock |
-| MOSI | GPIO 19 | Master Out |
-| MISO | GPIO 21 | Master In |
+| MOSI | GPIO 19 | Master out |
+| MISO | GPIO 21 | Master in |
 | RST | GPIO 22 | Reset |
 | **LEDs WS2812 (si utilisé par le Raspberry Pi)** |
 | Data | GPIO 18 | Signal PWM |
@@ -220,7 +225,7 @@ DEBUG_MODE = True  # Active les logs détaillés
 
 ## Débogage
 
-### Problèmes Courants
+### Problèmes courants
 
 **RFID ne fonctionne pas**
 ```bash
@@ -232,8 +237,8 @@ sudo raspi-config
 sudo python3 -c "import spidev; print('SPI OK')"
 ```
 
-**LEDs ne s'allument pas**
-(Si utilisé par le Raspberry Pi)
+**Les DEL ne s'allument pas**
+(si le Raspberry Pi les utilise)
 ```bash
 # Vérifier permissions
 sudo usermod -a -G gpio $USER
