@@ -6,7 +6,7 @@ Description: Programme principal pour gérer les interactions entre les composan
 """
 __author__ = "Adam Dubois et Jérémy Breault"
 __version__ = "1.0.1"
-__date__ = "2025-12-05"
+__date__ = "2026-01-09"
 __maintainer__ = "Adam Dubois"
 __email__ = "adamdubois19@hotmail.com"
 __status__ = "Production"
