@@ -19,12 +19,18 @@ from lib.Class_EcranI2C import EcranI2C
 from lib.Class_RFID import RFIDReader
 from lib.Class_UART import UART
 from lib.Class_Bouton import Bouton
+from lib.Class_KeyPad import KeyPad
 from lib.Log import logger
 
 #-----------------------------------------------#
 # Configuration initiale du programme           #
 #-----------------------------------------------#
 boutons = Bouton()
+
+#-----------------------------------------------#
+# Configuration du KeyPad                       #
+#-----------------------------------------------#
+keypad = KeyPad()
 
 #-----------------------------------------------#
 # Initialisation de l'écran I2C                 #
@@ -84,6 +90,11 @@ try:
             rfid_reader.resume()  # Reprend la lecture
             logger.warning("[Proto] Données écrites sur le RFID.")
             boutons.bouton_Gauche_appuye = False
+
+        if keypad.key_pressed is not None:
+            logger.warning(f"[Proto] Touche du KeyPad pressée: {keypad.key_pressed}")
+            ecran.afficher_texte(f"KeyPad: {keypad.key_pressed}", position=(0, 32))
+            keypad.key_pressed = None
 
 
 

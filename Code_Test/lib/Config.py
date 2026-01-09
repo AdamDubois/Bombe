@@ -99,8 +99,8 @@ BUTTON_D_PIN = 13          # Pin GPIO utilisé pour le bouton à droite
 
 # Keypad
 #Pin definitions for the keypad matrix
-KEYPAD_ROW_PINS = [4, 17, 27, 22]
-KEYPAD_COL_PINS = [5, 6, 13, 19]
+KEYPAD_ROW_PINS = [37, 35, 33, 31]
+KEYPAD_COL_PINS = [29, 40, 38, 36]
 # Keypad button mapping
 KEYPAD_BUTTONS = [
     ['1', '2', '3', 'A'],
