@@ -68,6 +68,30 @@ try:
     while True:
         time.sleep(0.1)  # Petite pause pour éviter une boucle trop rapide
 
+        if keypad.key_pressed:
+            match keypad.key_pressed:
+                case '1':
+                    ecran.effacer_ecran()
+                    ecran.afficher_texte("Mode KeyPad\nsélectionné", position=(0, 16))
+                    logger.info("[Proto] Mode KeyPad sélectionné.")
+                    uart_handler.send_message("SOLID_RED")
+                    keypad.key_pressed = None  # Réinitialiser la touche pressée
+                case '2':
+                    ecran.effacer_ecran()
+                    ecran.afficher_texte("Mode UDP\nsélectionné", position=(0, 16))
+                    logger.info("[Proto] Mode UDP sélectionné.")
+                    keypad.key_pressed = None  # Réinitialiser la touche pressée
+                case '3':
+                    ecran.effacer_ecran()
+                    ecran.afficher_texte("Mode RFID\nsélectionné", position=(0, 16))
+                    logger.info("[Proto] Mode RFID sélectionné.")
+                    keypad.key_pressed = None  # Réinitialiser la touche pressée
+                case '#':
+                    ecran.afficher_texte("Choisir un mode :\n1 : Code KeyPad\n2 : Code UDP\n3 : Code RFID", position=(0, 0))
+                    keypad.key_pressed = None  # Réinitialiser la touche pressée
+                case _:
+                    keypad.key_pressed = None  # Réinitialiser la touche pressée si non gérée
+
 #-----------------------------------------------#
 # Arrêt propre du programme                     #
 #-----------------------------------------------#
