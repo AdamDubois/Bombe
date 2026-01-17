@@ -1,0 +1,146 @@
+//-----------------------------------------------------------------//
+// Includes
+#include <Arduino.h>
+#include <Wire.h> //Communication I2C entre les esp32 et le PI
+#include <string.h> //Pour la manipulation des strings
+#include <Adafruit_NeoPixel.h>
+//#################################################################//
+
+//-----------------------------------------------------------------//
+//Constantes et définitions
+#define LED_PIN LED_BUILTIN // Pin de la LED intégrée
+
+String const ESP32_NAME = "UART_Neo"; //L'ID du ESP 32
+
+#define RX_PIN RX      // Exemple: GPIO17 = RX pour Serial1 ESP32
+#define TX_PIN TX      // Exemple: GPIO18 = TX pour Serial1 ESP32
+
+// Which pin on the ESP32 is connected to the NeoPixels? In this case, pin A5
+#define NEO_LED_PIN A5
+
+// How many NeoPixels are attached to the Arduino?
+#define LED_COUNT 75
+//#################################################################//
+
+//-----------------------------------------------------------------//
+// Variables globales
+String g_stringOfAllData = "";
+
+// Declare our NeoPixel strip object:
+Adafruit_NeoPixel strip(LED_COUNT, NEO_LED_PIN, NEO_GRB + NEO_KHZ800);
+// Argument 1 = Number of pixels in NeoPixel strip
+// Argument 2 = Arduino pin number (most are valid)
+// Argument 3 = Pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
+//#################################################################//
+
+//-----------------------------------------------------------------//
+// put function declarations here:
+void initNeoPixels();
+void testNeoPixels();
+//#################################################################//
+
+//-----------------------------------------------------------------//
+// the setup function runs once when you press reset or power the board
+void setup() 
+{
+    // Initialisation du port série pour le debug 
+    Serial.begin(115200);
+    Serial1.begin(115200, SERIAL_8N1, RX_PIN, TX_PIN); // UART hardware pins
+    delay(3000); // Attendre un moment pour que le moniteur série soit prêt
+    Serial.println("UART NeoPixel ESP32 Ready");
+
+    // put your setup code here, to run once:
+    // initialize digital pin LED_BUILTIN as an output.
+    pinMode(LED_PIN, OUTPUT);
+
+    initNeoPixels();
+}
+//#################################################################//
+
+//-----------------------------------------------------------------//
+// the loop function runs over and over again forever
+void loop() 
+{
+    // Lecture UART : accumule tant que disponible
+    while (Serial1.available()) {
+        char c = Serial1.read();
+
+        // Facultatif : gestion délimiteur
+        // Ici on déclenche sur \n (envoi côté Pi : print("cmd\n"))
+        if (c == '\n' || c == '\r') {
+            Serial.print("Données reçues: ");
+            Serial.println(g_stringOfAllData);
+
+            // Traitement de la commande
+            if (g_stringOfAllData == "TEST") {
+                testNeoPixels();
+            }
+            // Ajoute ici : interprétation d'autres commandes JSON, etc.
+
+            g_stringOfAllData = ""; // Réinitialise pour prochain message
+        } else {
+            g_stringOfAllData += c;
+        }
+    }
+
+    // put your main code here, to run repeatedly:
+    //digitalWrite(LED_PIN, HIGH);  // turn the LED on (HIGH is the voltage level)
+    //delay(1000);                      // wait for a second
+    //digitalWrite(LED_PIN, LOW);   // turn the LED off by making the voltage LOW
+    //delay(1000);                      // wait for a second
+}
+//#################################################################//
+
+//-----------------------------------------------------------------// 
+// put function definitions here:
+void initNeoPixels() 
+{
+    strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
+    strip.show();            // Turn OFF all pixels ASAP
+    strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
+}
+
+void testNeoPixels()
+{
+    // Test la séquence de couleurs de base
+    strip.fill(strip.Color(255, 255, 255)); // Fill the whole strip white
+    strip.show();                      // Update strip to match
+    delay(1000);
+    strip.fill(strip.Color(255, 0, 0)); // Fill the whole strip red
+    strip.show();                      // Update strip to match
+    delay(1000);
+    strip.fill(strip.Color(0, 255, 0)); // Fill the whole strip green
+    strip.show();                      // Update strip to match
+    delay(1000);
+    strip.fill(strip.Color(0, 0, 255)); // Fill the whole strip blue
+    strip.show();                      // Update strip to match
+    delay(1000);
+    strip.clear();                    // Clear the strip (turn off all pixels)
+    strip.show();                    // Update strip to match
+
+    // Test de l'augmentation progressive de la luminosité
+    for (int i = 0; i <= 255; i++) 
+    {
+        strip.setBrightness(i);         // Increase brightness
+        strip.fill(strip.Color(255, 0, 0)); // Fill the whole strip red
+        strip.show();                   // Update strip to match
+        delay(10);
+    }
+    strip.clear();                    // Clear the strip (turn off all pixels)
+    strip.show();                    // Update strip to match
+
+    // Test de différentes couleurs sur la bande en même temps
+    strip.fill(strip.Color(0, 0, 255), 0, LED_COUNT / 3);               // First third blue
+    strip.fill(strip.Color(0, 255, 0), LED_COUNT / 3, LED_COUNT / 3);   // Second third green
+    strip.fill(strip.Color(255, 0, 0), 2 * LED_COUNT / 3, LED_COUNT / 3); // Last third red
+    strip.show();                   // Update strip to match
+    delay(1000);
+    strip.clear();                 // Clear the strip (turn off all pixels)
+    strip.show();                 // Update strip to match
+}
+//#################################################################//
