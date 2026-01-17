@@ -1,21 +1,3 @@
-#!/usr/bin/env python
-#coding: utf-8
-"""
-Fichier : code.py
-Description: Code du ESP32-S3 Feather pour contrôler une bande de LEDs WS2812 via UART de manière asynchrone.
-    - Utilise asyncio pour gérer la réception UART et les animations LED de manière non bloquante.
-    - Supporte plusieurs animations prédéfinies et commandes de couleur.
-    - Gère les interruptions et nettoie correctement les ressources à la fin.
-    - Utilise une classe personnalisée pour gérer les LEDs.
-"""
-__author__ = "Adam Dubois et Jérémy Breault"
-__version__ = "1.0.1"
-__date__ = "2025-12-05"
-__maintainer__ = "Adam Dubois"
-__email__ = "adamdubois19@hotmail.com"
-__status__ = "Production"
-
-
 import asyncio
 import lib.class_DEL as DEL
 import lib.UART as UART

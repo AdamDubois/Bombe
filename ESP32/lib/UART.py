@@ -1,26 +1,9 @@
-#!/usr/bin/env python
-#coding: utf-8
-"""
-Fichier : UART.py
-Description: Code pour gérer la communication UART de manière asynchrone sur ESP32-S3 Feather.
-    - Utilise busio.UART pour la communication série.
-    - Fournit des fonctions pour lire et écrire des données via UART.
-    - Gère les données reçues de manière non bloquante avec polling.
-    - Supporte la lecture de lignes complètes terminées par un saut de ligne (\n).
-"""
-__author__ = "Adam Dubois et Jérémy Breault"
-__version__ = "1.0.1"
-__date__ = "2025-12-05"
-__maintainer__ = "Adam Dubois"
-__email__ = "adamdubois19@hotmail.com"
-__status__ = "Production"
-
-
+import asyncio
+import board
 import busio
-import lib.Config as Config
 
 # Configuration de l'UART
-uart = busio.UART(Config.TX_PIN, Config.RX_PIN, baudrate=Config.UART_BAUDRATE)
+uart = busio.UART(board.TX, board.RX, baudrate=115200)
 uart.timeout = 0  # Non-bloquant
 
 # Buffer pour accumuler les données reçues
