@@ -22,6 +22,8 @@ from lib.Class_Bouton import Bouton
 from lib.Class_KeyPad import KeyPad
 from lib.Log import logger
 
+code_keypad = "1234"  # Code d'accès pour le KeyPad
+
 #-----------------------------------------------#
 # Configuration initiale du programme           #
 #-----------------------------------------------#
@@ -74,20 +76,30 @@ try:
                     ecran.effacer_ecran()
                     ecran.afficher_texte("Mode KeyPad\nsélectionné", position=(0, 16))
                     logger.info("[Proto] Mode KeyPad sélectionné.")
-                    uart_handler.send_message("SOLID_RED")
+                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"RED\",Br:100}" + "\n"))
                     keypad.key_pressed = None  # Réinitialiser la touche pressée
+                    while True:
+                        time.sleep(0.1)
+                        if keypad.key_pressed:
+                            if keypad.key_pressed == '#':
+                                break
+                            else:
+                                pass
                 case '2':
                     ecran.effacer_ecran()
                     ecran.afficher_texte("Mode UDP\nsélectionné", position=(0, 16))
                     logger.info("[Proto] Mode UDP sélectionné.")
+                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"RED\",Br:100}" + "\n"))
                     keypad.key_pressed = None  # Réinitialiser la touche pressée
                 case '3':
                     ecran.effacer_ecran()
                     ecran.afficher_texte("Mode RFID\nsélectionné", position=(0, 16))
                     logger.info("[Proto] Mode RFID sélectionné.")
+                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"RED\",Br:100}" + "\n"))
                     keypad.key_pressed = None  # Réinitialiser la touche pressée
                 case '#':
                     ecran.afficher_texte("Choisir un mode :\n1 : Code KeyPad\n2 : Code UDP\n3 : Code RFID", position=(0, 0))
+                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"BLUE\",Br:100}" + "\n"))
                     keypad.key_pressed = None  # Réinitialiser la touche pressée
                 case _:
                     keypad.key_pressed = None  # Réinitialiser la touche pressée si non gérée
