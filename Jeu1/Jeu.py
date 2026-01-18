@@ -78,13 +78,36 @@ try:
                     logger.info("[Proto] Mode KeyPad sélectionné.")
                     uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"RED\",Br:100}" + "\n"))
                     keypad.key_pressed = None  # Réinitialiser la touche pressée
+                    index = 0
                     while True:
                         time.sleep(0.1)
                         if keypad.key_pressed:
                             if keypad.key_pressed == '#':
                                 break
                             else:
-                                pass
+                                if keypad.key_pressed == code_keypad[index]:
+                                    index += 1
+                                    ecran.afficher_texte("*" * index, position=(0, 32))
+                                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:19,Deb:" + str((index-1)*19) + ",Coul:\"GREEN\",Br:100}" + "\n"))
+                                    keypad.key_pressed = None  # Réinitialiser la touche pressée
+                                    if index == len(code_keypad):
+                                        ecran.effacer_ecran()
+                                        ecran.afficher_texte("Code correct!\nAccès autorisé.", position=(0, 16))
+                                        logger.info("[Proto] Code KeyPad correct. Accès autorisé.")
+                                        uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"GREEN\",Br:100}" + "\n"))
+                                        time.sleep(2)
+                                        keypad.key_pressed = "#"
+                                        break
+                                else:
+                                    ecran.effacer_ecran()
+                                    ecran.afficher_texte("Code incorrect!\nRéessayez.", position=(0, 16))
+                                    logger.warning("[Proto] Code KeyPad incorrect.")
+                                    uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"RED\",Br:100}" + "\n"))
+                                    time.sleep(2)
+                                    ecran.effacer_ecran()
+                                    ecran.afficher_texte("Mode KeyPad\nsélectionné", position=(0, 16))
+                                    index = 0
+                                    keypad.key_pressed = None
                 case '2':
                     ecran.effacer_ecran()
                     ecran.afficher_texte("Mode UDP\nsélectionné", position=(0, 16))
