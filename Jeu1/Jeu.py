@@ -94,8 +94,8 @@ try:
                                         ecran.effacer_ecran()
                                         ecran.afficher_texte("Code correct!\nAccès autorisé.", position=(0, 16))
                                         logger.info("[Proto] Code KeyPad correct. Accès autorisé.")
-                                        uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Stat\",Nbr:75,Deb:0,Coul:\"GREEN\",Br:100}" + "\n"))
-                                        time.sleep(2)
+                                        uart_handler.send_message(("{C:\"UART_Neo\",V:\"\",Cmd:\"Anim\",Nbr:75,Deb:0,Coul:\"GREEN\",Br:100,Anim:\"Rainbow\",Rep:10000}" + "\n"))
+                                        time.sleep(5)
                                         keypad.key_pressed = "#"
                                         break
                                 else:
