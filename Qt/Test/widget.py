@@ -27,8 +27,12 @@ class Widget(QWidget):
         self.ui.bouton_test.setText("De-Cliqué")
         self.ui.bouton_test.clicked.connect(self.Click)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    widget = Widget()
-    widget.show()
-    sys.exit(app.exec())
+try:
+    if __name__ == "__main__":
+        app = QApplication(sys.argv)
+        widget = Widget()
+        widget.show()
+        sys.exit(app.exec())
+
+except KeyboardInterrupt:
+    logger.warning("Arrêt demandé par l'utilisateur (Ctrl+C).")
