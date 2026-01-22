@@ -42,6 +42,11 @@ const NamedColor color_table[] = {
 
 const int NB_COLORS = sizeof(color_table) / sizeof(color_table[0]);
 
+#define ETAPES_BLINK 2 // Allumé et éteint
+#define DELAY_BLINK 500 // Délai par défaut entre les étapes de l'animation Blink en ms
+#define ETAPES_RAINBOW 256 // Nombre d'étapes pour l'animation Rainbow
+#define DELAY_RAINBOW 0 // Délai par défaut entre les étapes de l'animation Rainbow en ms
+
 //#################################################################//
 
 //-----------------------------------------------------------------//
@@ -59,7 +64,6 @@ Adafruit_NeoPixel strip(LED_COUNT, NEO_LED_PIN, NEO_GRB + NEO_KHZ800);
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-//#################################################################//
 
 String g_stringCode = "";
 String g_stringVerif = "";
@@ -70,12 +74,24 @@ int g_intNombre = 0;
 int g_intDebut = 0;
 String g_stringCouleur = "";
 int g_intBrightness = 0;
+int g_intDelai = -1;
+int g_delayAnim = 0;
+int g_repetitionAnim = 0;
+int g_etapeAnim = 0;
+int g_delayBetweenSteps = 0;
+//#################################################################//
 
 //-----------------------------------------------------------------//
 // put function declarations here:
 void initNeoPixels();
 void testNeoPixels();
+bool traitementMessageUART();
+void commandeStat();
+void commandeAnim();
 uint32_t getColorByName(const String& nom);
+void resetVariablesGlobals();
+uint32_t rainbowColor(byte pos);
+//#################################################################//
 
 HardwareSerial SerialNeo(1);
 
@@ -130,73 +146,22 @@ void loop()
         if(g_stringOfAllData == "") 
         {
             Serial.println("Aucune donnée reçue.");
-            g_News = false; // Réinitialise le drapeau
-            return;
         }
         else if(g_stringOfAllData == "TEST_NEO")
         {
             Serial.println("Lancement du test NeoPixels...");
             testNeoPixels();
-            g_News = false; // Réinitialise le drapeau
-            return;
+            resetVariablesGlobals(); // Réinitialise les variables après exécution
         }
         else
         {
             Serial.println("Parsing du message JSON...");
-
-            // --- PARSER LE MESSAGE ---
-            JsonDocument doc;
-
-            DeserializationError error = deserializeJson(doc, g_stringOfAllData);
-
-            if (!error) 
+            if(!traitementMessageUART())
             {
-                // Extraction
-                g_stringCode          = doc["C"]          | "";
-                if (g_stringCode != Code) 
-                {
-                    Serial.println("Code incorrect, message ignoré.");
-                    g_News = false; // Réinitialise le drapeau
-                    return; // Ignore le message si le code ne correspond pas
-                }
-                g_stringVerif         = doc["V"]          | "";
-                g_stringCmd           = doc["Cmd"]        | "";
-                g_stringAnimation     = doc["Anim"]       | "";
-                g_intNombre      = doc["Nbr"].as<int>();
-                g_intDebut       = doc["Deb"].as<int>();
-                g_stringCouleur       = doc["Coul"]       | "";
-                g_intRepetition  = doc["Rep"].as<int>();
-                g_intBrightness = doc["Br"].as<int>();
-                if (g_intBrightness < 0)
-                {
-                    g_intBrightness = 0;
-                    Serial.println("Brightness trop bas, réglé à 0.");
-                }
-                else if (g_intBrightness > 255)
-                {
-                    g_intBrightness = 255;
-                    Serial.println("Brightness trop haut, réglé à 255.");
-                }   
-
-                Serial.println("Message JSON parsé avec succès:");
-                Serial.print("Code: "); Serial.println(g_stringCode);
-                Serial.print("Verif: "); Serial.println(g_stringVerif);
-                Serial.print("Cmd: "); Serial.println(g_stringCmd);
-                Serial.print("Animation: "); Serial.println(g_stringAnimation);
-                Serial.print("Nombre: "); Serial.println(g_intNombre);
-                Serial.print("Debut: "); Serial.println(g_intDebut);
-                Serial.print("Couleur: "); Serial.println(g_stringCouleur);
-                Serial.print("Repetition: "); Serial.println(g_intRepetition);
-                Serial.print("Brightness: "); Serial.println(g_intBrightness);
-            } 
-
-            else 
-            {
-                Serial.print("Erreur parser JSON : ");
-                Serial.println(error.c_str());
+                Serial.println("Échec du traitement du message UART.");
+                resetVariablesGlobals();
             }
         }
-
         g_News = false; // Réinitialise le drapeau
     }
     else
@@ -204,15 +169,32 @@ void loop()
         if (g_stringCmd == "Stat")
         {
             Serial.println("Commande Stat reçue.");
-            strip.setBrightness(g_intBrightness); // Set brightness
-            strip.fill(getColorByName(g_stringCouleur), g_intDebut, g_intNombre); // Fill specified section with the given color
-            strip.show(); // Update strip to match
-
-            g_stringCmd = ""; // Réinitialise la commande après exécution
+            commandeStat();
+            resetVariablesGlobals(); // Réinitialise les variables après exécution
+        }
+        else if (g_stringCmd == "Anim")
+        {
+            if (g_etapeAnim == 0 && g_repetitionAnim == 0)
+            {
+                Serial.println("Commande Anim reçue.");
+            }
+            if (g_delayAnim <= 0)
+            {
+                commandeAnim();
+                g_delayAnim = g_delayBetweenSteps; // Délai entre les étapes
+            }
         }
     }
 
     delay(10); // Petite pause pour calculer les compteurs
+    if (g_delayAnim >= 10)
+    {
+        g_delayAnim -= 10;
+    }
+    else 
+    {
+        g_delayAnim = 0;
+    }
 }
 //#################################################################//
 
@@ -265,6 +247,173 @@ void testNeoPixels()
 }
 
 /*
+Brief :  Traite le message reçu via UART.
+Return : true si le message a été traité avec succès, false sinon.
+*/
+bool traitementMessageUART()
+{
+    // --- PARSER LE MESSAGE ---
+    JsonDocument doc;
+
+    DeserializationError error = deserializeJson(doc, g_stringOfAllData);
+
+    if (!error) 
+    {
+        // Extraction
+        g_stringCode          = doc["C"]          | "";
+        if (g_stringCode != Code) 
+        {
+            Serial.println("Code incorrect, message ignoré.");
+            g_News = false; // Réinitialise le drapeau
+            return false; // Ignore le message si le code ne correspond pas
+        }
+        g_stringVerif         = doc["V"]          | "";
+        g_stringCmd           = doc["Cmd"]        | "";
+        g_stringAnimation     = doc["Anim"]       | "";
+        g_intNombre      = doc["Nbr"].as<int>();
+        g_intDebut       = doc["Deb"].as<int>();
+        g_stringCouleur       = doc["Coul"]       | "";
+        g_intRepetition  = doc["Rep"].as<int>();
+        g_intBrightness = doc["Br"].as<int>();
+        if (g_intBrightness < 0)
+        {
+            g_intBrightness = 0;
+            Serial.println("Brightness trop bas, réglé à 0.");
+        }
+        else if (g_intBrightness > 255)
+        {
+            g_intBrightness = 255;
+            Serial.println("Brightness trop haut, réglé à 255.");
+        }
+        
+        if (g_intDelai >= 0)
+        {
+            g_delayBetweenSteps = g_intDelai; // Utilise le délai spécifié
+        }
+        else
+        {
+            if (g_stringAnimation == "Blink")
+            {
+                g_delayBetweenSteps = DELAY_BLINK; // Délai par défaut pour Blink
+            }
+            else if (g_stringAnimation == "Rainbow")
+            {
+                g_delayBetweenSteps = DELAY_RAINBOW; // Délai par défaut pour Rainbow
+            }
+            else
+            {
+                g_delayBetweenSteps = 0; // Pas d'animation ou inconnue
+            }
+        }
+
+        Serial.println("Message JSON parsé avec succès:");
+        Serial.print("Code: "); Serial.println(g_stringCode);
+        Serial.print("Verif: "); Serial.println(g_stringVerif);
+        Serial.print("Cmd: "); Serial.println(g_stringCmd);
+        Serial.print("Animation: "); Serial.println(g_stringAnimation);
+        Serial.print("Nombre: "); Serial.println(g_intNombre);
+        Serial.print("Debut: "); Serial.println(g_intDebut);
+        Serial.print("Couleur: "); Serial.println(g_stringCouleur);
+        Serial.print("Repetition: "); Serial.println(g_intRepetition);
+        Serial.print("Brightness: "); Serial.println(g_intBrightness);
+        Serial.println("Delai entre étapes: "); Serial.println(g_delayBetweenSteps);
+    } 
+
+    else 
+    {
+        Serial.print("Erreur parser JSON : ");
+        Serial.println(error.c_str());
+        return false; // Échec du parsing
+    }
+    
+    return true; // Succès du traitement
+}
+
+/*
+Brief :  Exécute la commande "Stat".
+*/
+void commandeStat()
+{
+    strip.setBrightness(g_intBrightness); // Set brightness
+    strip.fill(getColorByName(g_stringCouleur), g_intDebut, g_intNombre); // Fill specified section with the given color
+    strip.show(); // Update strip to match
+}
+
+/*
+Brief :  Exécute la commande "Anim".
+*/
+void commandeAnim()
+{
+    if (g_stringAnimation == "Blink")
+    {
+        if(g_repetitionAnim == 0 && g_etapeAnim == 0)
+        {
+            Serial.println("Démarrage de l'animation Blink.");
+            strip.setBrightness(g_intBrightness); // Set brightness
+        }
+        if (g_etapeAnim % 2 == 0) // Étape paire: allumer
+        {
+            strip.fill(getColorByName(g_stringCouleur), g_intDebut, g_intNombre); // Fill specified section with the given color
+            g_etapeAnim++;
+        }
+        else if (g_etapeAnim % 2 == 1) // Étape impaire: éteindre
+        {
+            strip.fill(strip.Color(0, 0, 0), g_intDebut, g_intNombre); // Turn off specified section
+            g_etapeAnim++;
+        }
+
+        strip.show(); // Update strip to match
+        
+        if(g_etapeAnim >= ETAPES_BLINK)
+        {
+            g_repetitionAnim++;
+            g_etapeAnim = 0; // Réinitialise l'étape pour la prochaine répétition
+        }
+        if(g_repetitionAnim >= g_intRepetition)
+        {
+            Serial.println("Animation Blink terminée.");
+            resetVariablesGlobals();
+            strip.fill(strip.Color(0, 0, 0), g_intDebut, g_intNombre); // Turn off specified section
+            strip.show(); // Update strip to match
+        }
+    }
+    else if (g_stringAnimation == "Rainbow")
+    {
+        if(g_repetitionAnim == 0 && g_etapeAnim == 0)
+        {
+            Serial.println("Démarrage de l'animation Rainbow.");
+            strip.setBrightness(g_intBrightness); // Set brightness
+        }
+        // Animation Rainbow simple
+        for(int i=0; i < g_intNombre; i++) 
+        {
+            int pixelIndex = (i + g_etapeAnim) % 256;
+            uint32_t color = rainbowColor(pixelIndex);
+            strip.setPixelColor(g_intDebut + i, color);
+        }
+        strip.show(); // Update strip to match
+        g_etapeAnim = (g_etapeAnim + 1) % 256;
+
+        if(g_etapeAnim == 0)
+        {
+            g_repetitionAnim++;
+        }
+        if(g_repetitionAnim >= g_intRepetition)
+        {
+            Serial.println("Animation Rainbow terminée.");
+            resetVariablesGlobals();
+            strip.fill(strip.Color(0, 0, 0), g_intDebut, g_intNombre); // Turn off specified section
+            strip.show(); // Update strip to match
+        }
+    }
+    else
+    {
+        Serial.println("Animation inconnue.");
+        resetVariablesGlobals();
+    }
+}
+
+/*
 Brief :  Récupère le code couleur NeoPixel correspondant au nom de couleur donné.
 */
 uint32_t getColorByName(const String& nom) {
@@ -275,5 +424,39 @@ uint32_t getColorByName(const String& nom) {
   }
   // Couleur inconnue: retour noir/off
   return strip.Color(0, 0, 0);
+}
+
+/*
+Brief :  Réinitialise les variables globales liées au message UART.
+*/
+void resetVariablesGlobals()
+{
+    g_stringCode = "";
+    g_stringVerif = "";
+    g_stringCmd = "";
+    g_stringAnimation = "";
+    g_intRepetition = 0;
+    g_intNombre = 0;
+    g_intDebut = 0;
+    g_stringCouleur = "";
+    g_intBrightness = 0;
+    g_intDelai = -1;
+    g_delayAnim = 0;
+    g_repetitionAnim = 0;
+    g_etapeAnim = 0;
+    g_delayBetweenSteps = 0;
+}
+
+uint32_t rainbowColor(byte pos) {
+  pos = 255 - pos;
+  if(pos < 85) {
+    return strip.Color(255 - pos * 3, 0, pos * 3);
+  } else if(pos < 170) {
+    pos -= 85;
+    return strip.Color(0, pos * 3, 255 - pos * 3);
+  } else {
+    pos -= 170;
+    return strip.Color(pos * 3, 255 - pos * 3, 0);
+  }
 }
 //#################################################################//
