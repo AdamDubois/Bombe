@@ -16,9 +16,9 @@ try:
         mode = input("Mode (0: Écriture, 1: Lecture): ")
         if mode.strip() == "0":
             # Mode écriture
-            message = input("Message à envoyer (max 256 caractères): ")
-            if len(message) > 256:
-                print("Message trop long, maximum 256 caractères.")
+            message = input("Message à envoyer (max 128 caractères): ")
+            if len(message) > 128:
+                print("Message trop long, maximum 128 caractères.")
                 continue
             # Préparer les données à envoyer
             data = [ord(c) for c in message]
