@@ -13,16 +13,6 @@ try:
         addr = input("Adresse I2C de l'ESP32 (en hex, ex: 0x10) ou Entrée pour utiliser 0x10: ")
         if addr.strip() != "":
             ESP32_ADDR = int(addr, 16)
-        user_msg = input("Message à envoyer (texte, ex: TEST): ")
-        # On convertit la chaîne en liste d'octets (bytearray), limite: 32 à 128 octets selon le MCU
-        data = bytearray(user_msg, "utf-8")
-        # Envoi sur le bus (tous les octets sauf \0 final)
-        for i in range(0, len(data), 30):  # Envoie par paquets de 30 pour être compatible
-            bus.write_i2c_block_data(ESP32_ADDR, 0, list(data[i:i+30]))
-            time.sleep(0.05)  # Laisse le temps au microcontrôleur d'avaler le block
-        print("Envoyé!")
-        # On attend une réponse
-        time.sleep(0.1)  # Petit délai avant de lire la réponse
         try:
             strReceived = ""
             # Lecture de la réponse
