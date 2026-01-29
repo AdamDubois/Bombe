@@ -12,10 +12,12 @@ partie2 = ",Cmd:\"Stat\",Nbr:5,Deb:0,Coul:\""
 partie3 = "\",Br:255}"
 couleurs = ["RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN", "WHITE"]
 
+boucle = 0
+
 try:
     while True:
         for i in range(len(couleurs)):
-            cmd = partie1 + str(i) + partie2 + couleurs[i] + partie3
+            cmd = partie1 + str(i) + partie2 + couleurs[boucle] + partie3
             # Préparer les données à envoyer
             data = [ord(c) for c in cmd]
             try:
@@ -24,9 +26,12 @@ try:
                 print("Commande envoyée:", cmd)
             except Exception as e:
                 print("Erreur d'écriture I2C:", e)
-            time.sleep(0.7)
+            time.sleep(0.25)
         # Décaler la liste des couleurs vers la droite
-        couleurs = [couleurs[-1]] + couleurs[:-1]
+        #couleurs = [couleurs[-1]] + couleurs[:-1]
+        boucle += 1
+        if boucle >= len(couleurs):
+            boucle = 0
 
 except KeyboardInterrupt:
     print("\nFin du programme !")
