@@ -8,7 +8,7 @@ I2C_BUS = 1        # Bus I2C habituels sur Pi (bus 1 sur la plupart des modèles
 bus = SMBus(I2C_BUS)
 
 partie1 = "{V:\"\",Str:"
-partie2 = ",Cmd:\"Stat\",Nbr:5,Deb:0,Coul:\""
+partie2 = ",Cmd:\"Stat\",Nbr:40,Deb:0,Coul:\""
 partie3 = "\",Br:255}"
 couleurs = ["RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN", "WHITE"]
 
