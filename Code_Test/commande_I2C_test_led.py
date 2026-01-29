@@ -26,7 +26,7 @@ try:
                 print("Commande envoyée:", cmd)
             except Exception as e:
                 print("Erreur d'écriture I2C:", e)
-            time.sleep(0.1)
+            time.sleep(0.23)
         # Décaler la liste des couleurs vers la droite
         #couleurs = [couleurs[-1]] + couleurs[:-1]
         boucle += 1
