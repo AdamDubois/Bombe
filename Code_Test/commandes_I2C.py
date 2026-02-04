@@ -2,7 +2,7 @@ from smbus2 import SMBus, i2c_msg      # Pour l'I2C (sudo pip install smbus2)
 import time
 
 # Adresse I2C de l'ESP32 (doit correspondre à SLAVE_ADDR dans ton Arduino)
-ESP32_ADDR = 0x12  # (0x0a en hex, 10 en décimal)
+ESP32_ADDR = 0x11  # (0x0a en hex, 10 en décimal)
 mode = 0
 I2C_BUS = 1        # Bus I2C habituels sur Pi (bus 1 sur la plupart des modèles)
 
