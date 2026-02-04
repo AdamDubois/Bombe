@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../ESP32_Feather_C/InXtremis"
+		},
+		{
+			"name": "Test_DEL",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
