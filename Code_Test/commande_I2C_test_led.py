@@ -9,7 +9,7 @@ bus = SMBus(I2C_BUS)
 
 partie1 = "{V:\"\",Str:"
 partie2 = ",Cmd:\"Stat\",Nbr:40,Deb:0,Coul:\""
-partie3 = "\",Br:50}"
+partie3 = "\",Br:10}"
 couleurs = ["RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN", "WHITE"]
 
 boucle = 0
