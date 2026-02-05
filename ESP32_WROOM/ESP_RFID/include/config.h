@@ -13,22 +13,33 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+
+
+// ============================================================================================================
+// Includes
+// ============================================================================================================
 #include <Arduino.h>
 #include <string.h> //Pour la manipulation des strings
+#include <Wire.h> //Communication I2C entre les esp32 et le PI
+#include <SPI.h> //Bibliothèque SPI pour la communication avec le MFRC522
+#include <MFRC522.h> //Bibliothèque MFRC522 pour la gestion du lecteur RFID
 
-//Debug mode (affiche des informations supplémentaires sur le moniteur série)
-#define DEBUG_MODE false
 
-#if DEBUG_MODE == true
+
+// ============================================================================================================
+// Définitions des constantes et paramètres
+// ============================================================================================================
+// Débogage série
+#define DEBUG_MODE true // Mettre à true pour activer les logs série, false pour désactiver
+
+#if DEBUG_MODE == true // Si le mode débogage est activé on définit les macros debug
     #define debug(...) printf("[DEBUG] : " __VA_ARGS__)
-    #define debugln(...) printf("\n")
-#else
+#else // Sinon on les définit comme des no-ops
     #define debug(...)
-    #define debugln(...)
 #endif
 
 // Nom de l'ESP32 esclave
-String const ESP32_NAME = "ESP_RFID";
+String const ESP32_NAME = "RFID";
 
 // Configuration I2C
 #define SLAVE_ADDR 0x11

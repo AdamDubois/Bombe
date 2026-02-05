@@ -12,34 +12,41 @@
  * La configuration des broches et des paramètres se trouve dans le fichier config.h. (include/config.h)
  */
 
-#include <Arduino.h>
-#include <string.h> //Pour la manipulation des strings
-#include <Wire.h> //Communication I2C entre les esp32 et le PI
-#include <SPI.h> //Bibliothèque SPI pour la communication avec le MFRC522
-#include <MFRC522.h> //Bibliothèque MFRC522 pour la gestion du lecteur RFID
-#include "config.h" //Fichier de configuration des broches et paramètres
 
-//-----------------------------------------------------------------//
-//Variables globales
 
+// ============================================================================================================
+// Includes
+// ============================================================================================================
+#include "config.h" //Fichier de configuration des broches et paramètres (inclut les bibliothèques nécessaires)
+
+
+
+// ============================================================================================================
+// Variables globales
+// ============================================================================================================
 //Créer les instances MFRC522 pour chaque lecteur
 MFRC522 mfrc522[NR_OF_READERS];   // Create MFRC522 instance.
 
 //Strings contenant les UID des cartes lues
 String g_uidReaders[NR_OF_READERS] = {"NONE", "NONE", "NONE", "NONE"}; // UIDs des cartes lues
 String g_stringComplet = ""; //String complète JSON à envoyer au maître
-//#################################################################//
 
-//-----------------------------------------------------------------//
-//Déclarations des fonctions
 
+
+// ============================================================================================================
+// Déclarations des fonctions
+// ============================================================================================================
 void onRequest();
 void resetUIDs();
 void scanReaders();
 String getUIDsAsString(byte *buffer, byte bufferSize);
 void formatDataAsJSON();
-//#################################################################//
 
+
+
+// ============================================================================================================
+// Setup et Loop
+// ============================================================================================================
 /*
 Brief : Initialisation de l'ESP32 en tant qu'esclave I2C et des lecteurs RFID MFRC522.
 */
@@ -76,6 +83,11 @@ Brief : Boucle principale vide car l'ESP32 agit en tant qu'esclave I2C.
 */
 void loop() {}
 
+
+
+// ============================================================================================================
+// Définitions des fonctions
+// ============================================================================================================
 /*
 Brief : Fonction de rappel appelée lorsqu'une demande est reçue du maître I2C.
         Scanne les lecteurs RFID, lit les UIDs des cartes, et envoie les données formatées en JSON au maître.
@@ -153,10 +165,10 @@ String getUIDsAsString(byte *buffer, byte bufferSize) {
 Brief : Formate les données des lecteurs RFID en une chaîne JSON.
 */
 void formatDataAsJSON() {
-  g_stringComplet = "{\"NAME\":\"" + ESP32_NAME + "\","; // Réinitialiser la chaîne avec le nom de l'ESP32
+  g_stringComplet = "{N:\"" + ESP32_NAME + "\","; // Réinitialiser la chaîne avec le nom de l'ESP32
 
   for (int i = 0; i < NR_OF_READERS; i++) {
-    g_stringComplet += "\"R" + String(i) + "\":\"" + g_uidReaders[i] + "\"";
+    g_stringComplet += "R" + String(i) + ":\"" + g_uidReaders[i] + "\"";
     if (i < NR_OF_READERS - 1) {
       g_stringComplet += ",";
     }
