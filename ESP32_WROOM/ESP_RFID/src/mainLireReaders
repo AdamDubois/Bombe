@@ -1,0 +1,86 @@
+#include <Arduino.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define SCK_PIN 4
+#define MISO_PIN 5
+#define MOSI_PIN 10
+
+#define RST_PIN 0
+#define SS_PIN 1
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+void setup() {
+    Serial.begin(9600);
+    SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, SS_PIN);
+    rfid.PCD_Init();
+    Serial.println("RC522 initialized. Waiting for cards...");
+}
+
+void loop() {
+    if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+        delay(50);
+        return;
+    }
+
+    Serial.print("Card UID: ");
+    for (byte i = 0; i < rfid.uid.size; i++) {
+        Serial.print(rfid.uid.uidByte[i], HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+
+    // Lecture de tous les blocs de données (hors blocs de contrôle)
+    MFRC522::MIFARE_Key key;
+    for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF; // Clé par défaut
+    MFRC522::StatusCode status;
+    const byte blocksPerSector = 4;
+    const byte sectorCount = 16; // Pour MIFARE 1K
+    byte buffer[18];
+    byte size = sizeof(buffer);
+
+    Serial.println("Lecture de la carte :");
+    for (byte sector = 0; sector < sectorCount; sector++) {
+        byte blockStart = sector * blocksPerSector;
+        status = rfid.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, blockStart, &key, &(rfid.uid));
+        if (status != MFRC522::STATUS_OK) {
+            Serial.print("Auth échouée secteur ");
+            Serial.print(sector);
+            Serial.print(": ");
+            Serial.println(rfid.GetStatusCodeName(status));
+            continue;
+        }
+        for (byte blockOffset = 0; blockOffset < blocksPerSector; blockOffset++) { // Inclure le bloc de contrôle
+            byte block = blockStart + blockOffset;
+            size = sizeof(buffer);
+            status = rfid.MIFARE_Read(block, buffer, &size);
+            if (status != MFRC522::STATUS_OK) {
+                Serial.print("Lecture échouée bloc ");
+                Serial.print(block);
+                Serial.print(": ");
+                Serial.println(rfid.GetStatusCodeName(status));
+            } else {
+                Serial.print("Bloc ");
+                Serial.print(block);
+                Serial.print(" (texte): ");
+                for (byte i = 0; i < 16; i++) {
+                    char c = (char)buffer[i];
+                    // Affiche uniquement les caractères imprimables, sinon un point
+                    if (c >= 32 && c <= 126) Serial.print(c);
+                    else Serial.print('.');
+                }
+                Serial.print("\nBloc ");
+                Serial.print(block);
+                Serial.print(" (octets): ");
+                for (byte i = 0; i < 16; i++) {
+                    if (buffer[i] < 0x10) Serial.print(" 0");
+                    else Serial.print(" ");
+                    Serial.print(buffer[i], HEX);
+                }
+                Serial.println();
+            }
+        }
+    }
+    rfid.PICC_HaltA();
+    rfid.PCD_StopCrypto1();
+}
