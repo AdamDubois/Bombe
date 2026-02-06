@@ -34,7 +34,7 @@
 
 #if DEBUG_MODE == true // Si le mode débogage est activé on définit les macros debug
     #define debug(...) printf("[DEBUG] : " __VA_ARGS__)
-#else // Sinon on les définit comme des no-ops
+#else
     #define debug(...)
 #endif
 
@@ -42,22 +42,22 @@
 String const ESP32_NAME = "RFID";
 
 // Configuration I2C
-#define SLAVE_ADDR 0x11
-#define SDA_PIN    6
-#define SCL_PIN    7
+#define SLAVE_ADDR  0x11
+#define SDA_PIN     6
+#define SCL_PIN     7
 
 // Configuration SPI
-#define SCK_PIN    4
-#define MOSI_PIN   10
-#define MISO_PIN   5
+#define SCK_PIN     4
+#define MOSI_PIN    10
+#define MISO_PIN    5
 
 // Configuration MFRC522
-#define RST_PIN       0
+#define RST_PIN     0
 
-#define SS_1_PIN      3
-#define SS_2_PIN      1
-#define SS_3_PIN      18
-#define SS_4_PIN      19
+#define SS_1_PIN    3
+#define SS_2_PIN    1
+#define SS_3_PIN    18
+#define SS_4_PIN    19
 
 #define NR_OF_READERS 4
 
