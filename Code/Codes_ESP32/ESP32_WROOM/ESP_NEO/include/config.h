@@ -110,15 +110,17 @@ const String ESP32_NAME = "NEO";
 // --------------------------------
 // Configuration des strips de LEDs
 // --------------------------------
-#define NB_STRIP 6 // Nombre total de strips (5 pour l'énigme 1 et 1 pour l'énigme 2)
+#define NB_STRIP 7 // Nombre total de strips (5 pour l'énigme 1, 1 pour l'énigme 0 et 1 pour l'énigme 2)
 
+#define NB_STRIPS_E0 1 // Nombre de strips pour l'énigme 0
 #define NB_STRIPS_E1 5 // Nombre de strips pour l'énigme 1
 #define NB_STRIPS_E2 1 // Nombre de strips pour l'énigme 2
 
-#if (NB_STRIP != NB_STRIPS_E1 + NB_STRIPS_E2)
+#if (NB_STRIP != NB_STRIPS_E0 + NB_STRIPS_E1 + NB_STRIPS_E2)
     #error "Le nombre total de strips ne correspond pas à la somme des strips pour chaque énigme. Veuillez vérifier la configuration."
 #endif
 
+#define DATA_PIN_E0 18 // Broche de données pour la strip de l'énigme 0
 #define DATA_PIN_E1_0 9 // Broche de données pour la strip 1 de l'énigme 1
 #define DATA_PIN_E1_1 10 // Broche de données pour la strip 2 de l'énigme 1
 #define DATA_PIN_E1_2 5 // Broche de données pour la strip 3 de l'énigme 1
@@ -130,6 +132,7 @@ const String ESP32_NAME = "NEO";
     #error "Attention, vous avez changé les broches de données pour les strips de LEDs. Assurez-vous que ces broches correspondent à votre configuration matérielle et que le routage est correct."
 #endif
 
+#define NB_LEDS_STRIP_E0 256 // Nombre de LEDs sur la strip de l'énigme 0
 #define NB_LEDS_STRIP_E1_0 60 // Nombre de LEDs sur la strip 1 de l'énigme 1
 #define NB_LEDS_STRIP_E1_1 60 // Nombre de LEDs sur la strip 2 de l'énigme 1
 #define NB_LEDS_STRIP_E1_2 60 // Nombre de LEDs sur la strip 3 de l'énigme 1
@@ -137,8 +140,10 @@ const String ESP32_NAME = "NEO";
 #define NB_LEDS_STRIP_E1_4 60 // Nombre de LEDs sur la strip 5 de l'énigme 1
 #define NB_LEDS_STRIP_E2 17 // Nombre de LEDs sur la strip de l'énigme 2
 
-#if (NB_LEDS_STRIP_E1_0 != 60 || NB_LEDS_STRIP_E1_1 != 60 || NB_LEDS_STRIP_E1_2 != 60 || NB_LEDS_STRIP_E1_3 != 60 || NB_LEDS_STRIP_E1_4 != 60 || NB_LEDS_STRIP_E2 != 17)
+#if (NB_LEDS_STRIP_E0 != 256 || NB_LEDS_STRIP_E1_0 != 60 || NB_LEDS_STRIP_E1_1 != 60 || NB_LEDS_STRIP_E1_2 != 60 || NB_LEDS_STRIP_E1_3 != 60 || NB_LEDS_STRIP_E1_4 != 60 || NB_LEDS_STRIP_E2 != 17)
     #error "Attention, vous avez changé le nombre de LEDs sur les strips. Assurez-vous que ces valeurs correspondent à votre configuration matérielle et que le routage est correct."
 #endif
+
+#define NB_SECTIONS_E0 4 // Nombre de sections pour la strip de l'énigme 0 (doit être un diviseur de NB_LEDS_STRIP_E0)
 
 #endif // CONFIG_H
