@@ -142,7 +142,7 @@ extern byte ssPins[]; // Tableau des broches SS
 
 #define MFRC522_POWER 0x20 // Valeur de puissance de sortie des lecteurs RFID (0x00 à 0xFF, plus la valeur est élevée, plus la puissance est forte, mais cela peut causer des problèmes de communication avec des câbles longs ou dans un environnement bruyant électriquement, donc on recommande de réduire la puissance pour améliorer la fiabilité)
 
-#define NONE_COUNTER_THRESHOLD 5 // Nombre de lectures consécutives de "NONE" avant de considérer qu'il n'y a vraiment aucune carte présente, pour éviter les trous de "NONE" causés par des difficultés de lecture
+#define NONE_COUNTER_THRESHOLD 10 // Nombre de lectures consécutives de "NONE" avant de considérer qu'il n'y a vraiment aucune carte présente, pour éviter les trous de "NONE" causés par des difficultés de lecture
 
 #if (MFRC522_POWER < 0x01 || MFRC522_POWER > 0xFF)
     #error "La valeur de puissance pour les lecteurs RFID doit être comprise entre 0x01 et 0xFF, car une valeur en dessous de 0x01 peut ne pas fournir suffisamment de puissance pour lire les cartes, et une valeur au-dessus de 0xFF n'est pas valide. Veuillez choisir une valeur de puissance appropriée pour vos lecteurs RFID en fonction de votre environnement et de la distance de lecture souhaitée."
