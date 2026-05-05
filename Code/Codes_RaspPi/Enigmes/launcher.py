@@ -31,9 +31,6 @@ class launcher:
         # Reset des ESPs au lancement du launcher
         self.esp_reset = ResetESP()
         self.esp_reset.reset_esps()
-        self.esp_reset.cleanup()
-        self.esp_reset = None
-        time.sleep(5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de lancer les énigmes
 
         # UI
         self.ui_message = {
@@ -95,6 +92,9 @@ class launcher:
         print("Arret du launcher...")
         self.stop = True
         GPIO.cleanup()
+
+        self.esp_reset.cleanup()
+        self.esp_reset = None
 
         if self.e_rfid is not None:
             self.e_rfid.close()
