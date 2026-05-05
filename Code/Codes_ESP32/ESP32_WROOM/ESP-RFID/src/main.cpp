@@ -236,8 +236,10 @@ void scanReaders() {
     }
     else if (g_noneCounters[i] < NONE_COUNTER_THRESHOLD && g_uidReaders[i] != "NONE") { // Si aucune carte n'est présente, incrémenter le compteur de NONE pour ce lecteur
       g_noneCounters[i]++;
+      debug("Reader %d: No card detected. Incrementing NONE counter: %d\n", i, g_noneCounters[i]);
     }
     else {
+      debug("Reader %d: No card detected. NONE counter: %d\n", i, g_noneCounters[i]);
       g_uidReaders[i] = "NONE"; // Si aucune carte n'est présente, stocker "NONE" pour ce lecteur
       g_noneCounters[i] = 0; // Réinitialiser le compteur de NONE pour ce lecteur
     }
