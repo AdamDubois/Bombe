@@ -120,10 +120,13 @@ class launcher:
 
             match self.enigme:
                 case 0:
+                    pass
+
+                case 1:
                     if self.ui_message["game_start"] is False:
                         self.ui_message["game_start"] = True
                         self.send_state()
-                case 1:
+
                     if self.e_rfid is None:
                         self.e_rfid = RFID()
                     self.e_rfid.play()
@@ -154,6 +157,8 @@ class launcher:
                         self.ui_message["enigme"] = self.enigme
                         self.send_state()
                 case 4:
+                    pass # Écran de victoire géré par l'interface, on attend que le bouton soit pressé pour recommencer
+                case 5:
                     print("Toutes les enigmes sont terminées. Recommencement au début.")
                     self.e_rfid.close()
                     self.e_rfid = None
