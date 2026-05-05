@@ -7,6 +7,8 @@ import sys
 
 import RPi.GPIO as GPIO
 
+from rst_ESP import ResetESP
+
 from Bouton.EnigmeBouton import Bouton
 from RFID.RFID import RFID
 from Switchs.Switchs import Switchs
@@ -25,6 +27,13 @@ class launcher:
     def __init__(self):
         # Globale
         self.stop = False
+
+        # Reset des ESPs au lancement du launcher
+        self.esp_reset = ResetESP()
+        self.esp_reset.reset_esps()
+        self.esp_reset.cleanup()
+        self.esp_reset = None
+        time.sleep(5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de lancer les énigmes
 
         # UI
         self.ui_message = {
@@ -131,7 +140,8 @@ class launcher:
                         self.e_rfid = RFID()
                     self.e_rfid.play()
                     for i in range(4):
-                        self.ui_message["rfid"][i] = self.e_rfid.readers_values[i]
+                        self.ui_message["rfid"][i] = self.e_rfid.bonnes_cartes[i]
+                        print()
                     self.send_state()
                     if self.e_rfid.fini:
                         self.enigme += 1
