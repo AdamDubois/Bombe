@@ -99,14 +99,17 @@ class launcher:
         if self.e_rfid is not None:
             self.e_rfid.close()
             self.e_rfid = None
+            time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
         if self.e_bouton is not None:
             self.e_bouton.close()
             self.e_bouton = None
+            time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
         if self.e_switchs is not None:
             self.e_switchs.close()
             self.e_switchs = None
+            time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
         if self.ui_process is not None:
             try:
@@ -174,10 +177,13 @@ class launcher:
 
                     self.e_rfid.close()
                     self.e_rfid = None
+                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_bouton.close()
                     self.e_bouton = None
+                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_switchs.close()
                     self.e_switchs = None
+                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
                     self.enigme = 0
                     self.ui_message["game_start"] = False
