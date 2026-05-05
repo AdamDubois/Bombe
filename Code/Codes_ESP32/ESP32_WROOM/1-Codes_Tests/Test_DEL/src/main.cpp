@@ -23,7 +23,7 @@
 #define LED6_COUNT    60
 
 #define LED7_PIN      18
-#define LED7_COUNT    256
+#define LED7_COUNT    60
 
 
 CRGB leds0[LED0_COUNT];
@@ -51,45 +51,38 @@ void setup() {
 }
 
 void loop() {
-  // fill_solid(leds0, LED0_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 0 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds1, LED1_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 1 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds2, LED2_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 2 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds3, LED3_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 3 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds4, LED4_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 4 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds5, LED5_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 5 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds6, LED6_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 6 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // fill_solid(leds7, LED7_COUNT, CRGB::Red); // Allume en rouge
-  // FastLED.show();
-  // Serial.println("Bande 7 allumée");
-  // sleep(1); // Attendre 1 seconde
-  // //FastLED.clear();
-  // FastLED.show();
-  
-  // fill_solid(leds7, LED7_COUNT, CRGB::White); // Allume en blanc
-  // FastLED.show();
-  // delay(10); // Attendre 1 seconde
+  fill_solid(leds0, LED0_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 0 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds1, LED1_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 1 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds2, LED2_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 2 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds3, LED3_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 3 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds4, LED4_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 4 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds5, LED5_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 5 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds6, LED6_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 6 allumée");
+  sleep(1); // Attendre 1 seconde
+  fill_solid(leds7, LED7_COUNT, CRGB::White); // Allume en blanc
+  FastLED.show();
+  Serial.println("Bande 7 allumée");
+  sleep(1); // Attendre 1 seconde
   FastLED.clear();
   FastLED.show();
-  // delay(10); // Attendre 1 seconde
 }

@@ -4,7 +4,6 @@
 Debug_Neo g_Neo;
 
 // Strips
-Adafruit_NeoPixel strip_E0 = Adafruit_NeoPixel(NB_LEDS_STRIP_E0, DATA_PIN_E0, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip_E1_0 = Adafruit_NeoPixel(NB_LEDS_STRIP_E1_0, DATA_PIN_E1_0, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip_E1_1 = Adafruit_NeoPixel(NB_LEDS_STRIP_E1_1, DATA_PIN_E1_1, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip_E1_2 = Adafruit_NeoPixel(NB_LEDS_STRIP_E1_2, DATA_PIN_E1_2, NEO_GRB + NEO_KHZ800);
@@ -12,8 +11,7 @@ Adafruit_NeoPixel strip_E1_3 = Adafruit_NeoPixel(NB_LEDS_STRIP_E1_3, DATA_PIN_E1
 Adafruit_NeoPixel strip_E1_4 = Adafruit_NeoPixel(NB_LEDS_STRIP_E1_4, DATA_PIN_E1_4, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip_E2 = Adafruit_NeoPixel(NB_LEDS_STRIP_E2, DATA_PIN_E2, NEO_GRB + NEO_KHZ800);
 
-Adafruit_NeoPixel *tabStrips[NB_STRIP] = {&strip_E0, &strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4, &strip_E2}; // Tableau de pointeurs vers les strips de l'énigme 1 et l'énigme 0 (pour faciliter l'accès dans les fonctions)
-Adafruit_NeoPixel *tabStrips_E1[NB_STRIPS_E1] = {&strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4}; // Tableau de pointeurs vers les strips de l'énigme 1
+Adafruit_NeoPixel *tabStrips[NB_STRIP] = {&strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4, &strip_E2};
 
 String g_stringOfAllData = "";
 int g_compteur = 0; // Compteur pour flasher la strip sélectionnée
@@ -25,7 +23,6 @@ int g_animationIndex = -1; // -1 signifie aucune animation, sinon 0 à 11 pour l
 void commandeI2C(int howMany);
 void decodeJSON(JsonDocument& doc);
 void fill_Enigme2(CRGB color);
-void fill_section_Enigme0(int section, CRGB color);
 
 void setup() {
   // put your setup code here, to run once:
@@ -51,12 +48,7 @@ void setup() {
   // ----------------------------------
   for (int i = 0; i < NB_STRIP; i++) {
     tabStrips[i]->begin();
-    if (i != 0) { // Ne pas initialiser la strip de l'énigme 0 à 255 pour éviter qu'elle soit trop éblouissante
-      tabStrips[i]->setBrightness(255); // Set brightness (max = 255)
-    }
-    else {
-      tabStrips[i]->setBrightness(50); // Set brightness (max = 255) pour la strip de l'énigme 0
-    }
+    tabStrips[i]->setBrightness(255); // Set brightness (max = 255)
     tabStrips[i]->fill(0); // Initialize all pixels to 'off'
     tabStrips[i]->show(); // Initialize all pixels to 'off'
   }
@@ -73,43 +65,41 @@ void loop() {
     // Faire clignoter la strip sélectionnée pour indiquer qu'elle est sélectionnée
     if (g_compteur <= 6 ) 
     { // Clignote toutes les 10 itérations (environ toutes les 500 ms)
-      tabStrips_E1[g_stripSelected]->fill(tabStrips_E1[g_stripSelected]->Color(g_couleurStripSelected[0], g_couleurStripSelected[1], g_couleurStripSelected[2])); // Allumer la strip sélectionnée avec la couleur définie
+      tabStrips[g_stripSelected]->fill(tabStrips[g_stripSelected]->Color(g_couleurStripSelected[0], g_couleurStripSelected[1], g_couleurStripSelected[2])); // Allumer la strip sélectionnée avec la couleur définie
     }
     else if (g_compteur <= 7)
     {
-      tabStrips_E1[g_stripSelected]->fill(0); // Éteindre la strip sélectionnée
+      tabStrips[g_stripSelected]->fill(0); // Éteindre la strip sélectionnée
     }
     else
     {
       g_compteur = 0; // Réinitialiser le compteur pour recommencer le clignotement
     }
-  }
-
-  for (int i = 0; i < NB_STRIPS_E1; i++) {
-    tabStrips_E1[i]->show(); // Afficher les changements sur toutes les strips de l'énigme 1
+    tabStrips[g_stripSelected]->show();
   }
   
   switch (g_animationIndex)
   {
     case 0: // Tout en rouge
-      fill_Enigme2(CRGB::Red); // Allumer tous les pixels de la strip E2 en rouge
-      strip_E2.show();
+      fill_Enigme2(CRGB::Red); // Allumer les LEDs paires en rouge
+      FastLED.show();
+
       break;
 
     case 1: // Animation échec
       for (int i = 0; i < 5; i++)
       {
-        fill_Enigme2(CRGB::Red); // Allumer les pixels visibles de la strip E2 en rouge
-        strip_E2.show();
+        fill_Enigme2(CRGB::Red); // Allumer les LEDs paires en rouge
+        FastLED.show();
         delay(500); // Attendre 500 millisecondes
 
-        strip_E2.fill(0); // Éteindre les pixels visibles de la strip E2
-        strip_E2.show();
+        fill_Enigme2(CRGB::Black); // Éteindre les LEDs paires
+        FastLED.show();
         delay(500); // Attendre 500 millisecondes
       }
 
       fill_Enigme2(CRGB::Red); // Allumer les LEDs paires en rouge
-      strip_E2.show();
+      FastLED.show();
 
       g_animationIndex = -1; // Réinitialiser l'index de l'animation pour éviter de répéter l'animation
 
@@ -118,17 +108,17 @@ void loop() {
     case 2: // Animation réussite
       for (int i = 0; i < 5; i++)
       {
-        strip_E2.fill(strip_E2.Color(0, 255, 0)); // Allumer les LEDs paires en vert
-        strip_E2.show();
+        fill_Enigme2(CRGB::Green); // Allumer les LEDs paires en vert
+        FastLED.show();
         delay(500); // Attendre 500 millisecondes
 
-        strip_E2.fill(strip_E2.Color(0, 0, 0)); // Éteindre les LEDs paires
-        strip_E2.show();
+        fill_Enigme2(CRGB::Black); // Éteindre les LEDs paires
+        FastLED.show();
         delay(500); // Attendre 500 millisecondes
       }
       
-      strip_E2.fill(strip_E2.Color(0, 255, 0)); // Allumer les LEDs paires en vert
-      strip_E2.show();
+      fill_Enigme2(CRGB::Green); // Allumer les LEDs paires en vert
+      FastLED.show();
 
       g_animationIndex = -1; // Réinitialiser l'index de l'animation pour éviter de répéter l'animation
       
@@ -188,7 +178,7 @@ void loop() {
       break;
       
     case 12: // Éteindre toutes les DELs
-      strip_E2.fill(strip_E2.Color(0, 0, 0)); // Éteindre les LEDs paires
+      fill_Enigme2(CRGB::Black); // Éteindre les LEDs paires
       strip_E2.show();
       break;
 
@@ -228,13 +218,6 @@ void commandeI2C(int howMany) {
 Brief :
 - Décode le JSON reçu du maître et effectue les actions appropriées en fonction du contenu du JSON. Cette fonction est appelée lorsque des données sont reçues via I2C, et elle utilise la bibliothèque ArduinoJson pour parser le JSON et extraire les informations nécessaires pour contrôler les strips de LEDs ou effectuer d'autres actions en fonction des commandes reçues.
 - Format du JSON attendu :
-  Énigme 0 : {"E":0,"0":"0","1":"0","2":"0","3":"0"}
-    E : numéro de l'énigme (pour vérification)
-    0 : 0 pour éteindre la section 0 de la matrice de LEDs, 1 pour l'allumer en rouge, 2 pour l'allumer en vert
-    1 : 0 pour éteindre la section 1 de la matrice de LEDs, 1 pour l'allumer en rouge, 2 pour l'allumer en vert
-    2 : 0 pour éteindre la section 2 de la matrice de LEDs, 1 pour l'allumer en rouge, 2 pour l'allumer en vert
-    3 : 0 pour éteindre la section 3 de la matrice de LEDs, 1 pour l'allumer en rouge, 2 pour l'allumer en vert
-    Exemple : {"E":0,"0":"1","1":"1","2":"2","3":"1"}
   Énigme 1 : {"E":1,"Selected":0,"S0":"#FF0000","S1":"#00FF00","S2":"#0000FF","S3":"#FFFF00","S4":"#00FFFF"}
     E : numéro de l'énigme (pour vérification)
     Selected : numéro du strip sélectionné (0 à 4) ou -1 si aucun strip n'est sélectionné
@@ -242,7 +225,7 @@ Brief :
     S0 à S4 : couleurs au format hexadécimal pour chaque strip
     Exemple : {"E":1,"Selected":0,"S0":"#FF0000","S1":"#00FF00","S2":"#0000FF","S3":"#FFFF00","S4":"#00FFFF"}
     Ce format permet de transmettre toutes les informations nécessaires pour mettre à jour les couleurs des strips en une seule commande JSON.
-  Énigme 2 : {"E":2,"Etape":MSG}
+  Énigme 2 : {"E":NUM_ENIGME,"Etape":MSG}
     E : numéro de l'énigme (pour vérification)
     Etape : Étape de del
       0 toutes la strip en rouge
@@ -267,24 +250,7 @@ Return :
 void decodeJSON(JsonDocument& doc) {
   g_Neo.working(); // Indique que le système est en train de traiter une commande
   int enigme = doc["E"];
-
-  if (enigme == 0) {
-    debug("Traitement de l'énigme 0, sections: %d %d %d %d", doc["0"].as<int>(), doc["1"].as<int>(), doc["2"].as<int>(), doc["3"].as<int>());
-    for (int i = 0; i < NB_SECTIONS_E0; i++) {
-      int state = doc[String(i)].as<int>();
-      if (state == 0) {
-        fill_section_Enigme0(i, CRGB::Black); // Éteindre la section
-      } 
-      else if (state == 1) {
-        fill_section_Enigme0(i, CRGB::Red); // Allumer la section en rouge
-      } 
-      else if (state == 2) {
-        fill_section_Enigme0(i, CRGB::Green); // Allumer la section en vert
-      }
-    }
-    FastLED.show();
-  }
-  else if (enigme == 1) {
+  if (enigme == 1) {
     debug("Traitement de l'énigme 1, strip sélectionnée: %d", doc["Selected"].as<int>());
     g_stripSelected = doc["Selected"];
     g_compteur = 0; // Réinitialiser le compteur pour faire clignoter la strip sélectionnée
@@ -301,8 +267,8 @@ void decodeJSON(JsonDocument& doc) {
       }
 
       if (i >= 0 && i < NB_STRIPS_E1) {
-        tabStrips_E1[i]->fill(tabStrips_E1[i]->Color(color.r, color.g, color.b));
-        tabStrips_E1[i]->show();
+        tabStrips[i]->fill(tabStrips[i]->Color(color.r, color.g, color.b));
+        tabStrips[i]->show();
       } 
     }
     FastLED.show();
@@ -338,13 +304,4 @@ void fill_Enigme2(CRGB color) {
     }
   }
   strip_E2.show(); // Affiche les changements sur la strip E2
-}
-
-void fill_section_Enigme0(int section, CRGB color) {
-  int startPixel = section * (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
-  int endPixel = startPixel + (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
-
-  strip_E0.fill(strip_E0.Color(color.r, color.g, color.b), startPixel, endPixel - startPixel); // Allume les pixels de la section spécifiée de la strip E0 avec la couleur spécifiée
-
-  strip_E0.show(); // Affiche les changements sur la strip E0
 }
