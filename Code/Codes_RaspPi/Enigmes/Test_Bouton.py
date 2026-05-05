@@ -10,7 +10,7 @@ if mode == "Once":
     e_Bouton = Bouton()
 
     try:
-        while not e_Bouton.gagnee:
+        while not e_Bouton.fini:
             e_Bouton.play()
             time.sleep(0.1)  # Petite pause pour éviter de surcharger le CPU
 
@@ -32,7 +32,7 @@ elif mode == "Loop":
         e_Bouton = Bouton()
 
         try:
-            while not e_Bouton.gagnee:
+            while not e_Bouton.fini:
                 e_Bouton.play()
                 time.sleep(0.1)  # Petite pause pour éviter de surcharger le CPU
 

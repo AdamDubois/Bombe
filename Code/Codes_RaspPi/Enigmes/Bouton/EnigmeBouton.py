@@ -19,7 +19,7 @@ class Bouton:
 
         self.bonnes_strips = [False] * NB_STRIPS # Nombre de strips qui ont la bonne couleur, peut être utilisée pour vérifier si le joueur a résolu l'énigme, ou pour donner des indices sur le nombre de strips correctes
 
-        self.gagnee = False # Fonction à appeler lorsque le joueur gagne l'énigme, peut être redéfinie pour faire ce qu'on veut faire lorsqu'on gagne, par exemple déclencher une animation de victoire sur les bandes LED, ouvrir une porte, etc.
+        self.fini = False # Fonction à appeler lorsque le joueur gagne l'énigme, peut être redéfinie pour faire ce qu'on veut faire lorsqu'on gagne, par exemple déclencher une animation de victoire sur les bandes LED, ouvrir une porte, etc.
 
         # Initialisation de l'état des couleurs pour chaque strip en fonction de la configuration de départ
         for i in range(NB_STRIPS):
@@ -198,7 +198,7 @@ class Bouton:
         Fonction à appeler lorsque le joueur gagne l'énigme.
         Fait ce qu'on veut faire lorsqu'on gagne, par exemple déclencher une animation de victoire sur les bandes LED, ouvrir une porte, etc.
         """
-        self.gagnee = True
+        self.fini = True
         logger.info("Enigme résolue ! Toutes les strips ont la bonne couleur.")
         self.I2C_handler.sendI2C(self.formatToESPCommande(strip_selectionnee=-1)) # Arrêt de la strip sélectionnée pour indiquer que l'énigme est résolue, peut être utilisé par l'ESP pour déclencher une animation de victoire spécifique ou d'autres actions liées à la victoire
         for i in range(NB_STRIPS):
@@ -212,10 +212,11 @@ class Bouton:
         self.I2C_handler.sendI2C(self.formatToESPCommande(strip_selectionnee=-1)) # Envoi de la configuration avec toutes les strips éteintes à l'ESP, peut être utilisé pour éteindre les LEDs lorsque le programme se termine ou en cas d'interruption
 
     def close(self):
+        self.eteindreLEDs() # On éteint les LEDs avant de fermer le programme pour éviter de laisser les LEDs allumées en cas d'interruption ou de fin du programme
         self.I2C_handler.close()
 
     def play(self):
-        if not self.gagnee:
+        if not self.fini:
             self.boutons_values_temp = self.I2C_handler.decodeJSON(self.I2C_handler.getI2C())
 
             if self.boutons_values_temp is not None:
