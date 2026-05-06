@@ -15,8 +15,14 @@ Adafruit_NeoPixel strip_E2 = Adafruit_NeoPixel(NB_LEDS_STRIP_E2, DATA_PIN_E2, NE
 Adafruit_NeoPixel *tabStrips[NB_STRIP] = {&strip_E0, &strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4, &strip_E2}; // Tableau de pointeurs vers les strips de l'énigme 1 et l'énigme 0 (pour faciliter l'accès dans les fonctions)
 Adafruit_NeoPixel *tabStrips_E1[NB_STRIPS_E1] = {&strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4}; // Tableau de pointeurs vers les strips de l'énigme 1
 
-String g_stringOfAllData = "";
-bool g_dataReceived = false; // Indique si des données ont été reçues via I2C
+// File d'attente I2C pour éviter l'écrasement quand plusieurs trames arrivent rapidement.
+constexpr uint8_t I2C_QUEUE_SIZE = 8;
+constexpr size_t I2C_MSG_MAX_LEN = 256;
+char g_i2cQueue[I2C_QUEUE_SIZE][I2C_MSG_MAX_LEN];
+volatile uint8_t g_i2cQueueHead = 0;
+volatile uint8_t g_i2cQueueTail = 0;
+volatile uint8_t g_i2cQueueCount = 0;
+volatile bool g_i2cQueueOverflow = false;
 
 // Enigme 1
 bool g_e1_activated = false; // Indique si l'énigme 1 a été activée (permet de savoir si on doit effectuer une action sur les strips de l'énigme 1)
@@ -29,7 +35,6 @@ double g_e1_previous = 0; // Timer pour gérer la durée d'affichage des flash d
 bool g_e2_activated = false; // Indique si l'énigme 2 a été activée (permet de savoir si on doit effectuer une action sur la strip de l'énigme 2)
 int g_e2_etape = -1; // Indique l'étape actuelle de l'énigme 2 (permet de savoir comment allumer les LEDs de la strip de l'énigme 2)
 int g_e2_compte_flash = 0; // Compteur pour gérer le nombre de flash de la strip de l'énigme 
-double g_e2_now = 0; // Timer pour gérer la durée d'affichage des différentes étapes de l'énigme 2
 double g_e2_previous = 0; // Timer pour gérer la durée d'affichage des différentes étapes de l'énigme 2
 
 // put function declarations here:
@@ -37,6 +42,7 @@ void commandeI2C(int howMany);
 void decodeJSON(JsonDocument& doc);
 void fill_Enigme2(CRGB color);
 void fill_section_Enigme0(int section, CRGB color);
+bool popI2CMessage(char* outBuffer, size_t outBufferSize);
 
 void setup() {
   // put your setup code here, to run once:
@@ -82,22 +88,27 @@ void loop() {
   try
   {
     //debug("Loop en cours d'exécution..."); // Message de debug pour indiquer que la loop est en cours d'exécution
-    if (g_dataReceived) { // Vérifie si des données ont été reçues via I2C
-      debug("Données reçues via I2C : %s", g_stringOfAllData.c_str()); // Message de debug pour afficher les données reçues
-      g_dataReceived = false; // Réinitialise le flag de réception de données
+    char i2cMessage[I2C_MSG_MAX_LEN] = {0};
+    if (popI2CMessage(i2cMessage, sizeof(i2cMessage))) { // Vérifie si un message est disponible dans la file
+      debug("Données reçues via I2C : %s", i2cMessage); // Message de debug pour afficher les données reçues
 
       // Création d'un document JSON pour parser les données reçues
       JsonDocument doc; // Document JSON pour parser les données reçues
 
       // Parse le JSON reçu
-      DeserializationError error = deserializeJson(doc, g_stringOfAllData);
+      DeserializationError error = deserializeJson(doc, i2cMessage);
       if (error) {
-        debug("Erreur lors du parsing du JSON : %s", error.c_str()); // Message de debug pour indiquer une erreur lors du parsing du JSON
+        debug("Erreur lors du parsing du JSON : %s", error.c_str()); // Message de debug pour indiquer une erreur lors du parsing du JSO
         return; // Sort de la loop pour attendre la prochaine commande
       }
 
       // Décodage du JSON et exécution des actions appropriées en fonction du contenu du JSON
       decodeJSON(doc); // Appelle la fonction de décodage du JSON pour traiter les commandes reçues
+    }
+
+    if (g_i2cQueueOverflow) {
+      debug("Attention: file I2C pleine, au moins un message a ete ignore");
+      g_i2cQueueOverflow = false;
     }
 
 
@@ -131,13 +142,14 @@ void loop() {
 
     
     if (g_e2_activated) { // Si il y a une animation de l'énigme 2 en cours, on l'exécute
-      if (g_e2_now == 0) { // Si le timer n'est pas encore initialisé, on l'initialise
-        g_e2_now = millis();
+      if (g_e2_previous == 0) { // Si le timer n'est pas encore initialisé, on l'initialise
         g_e2_previous = millis();
       }
+      //debug("milis = %lu, previous = %f, temps écoulé = %f", millis(), g_e2_previous, millis() - g_e2_previous); // Message de debug pour afficher le timer actuel et le timer de la dernière mise à jour de l'animation de l'énigme 2
       if (millis() - g_e2_previous >= 500) { // Si 500 ms se sont écoulées depuis la dernière mise à jour de l'animation, on passe à l'étape suivante
         g_e2_previous = millis(); // Réinitialise le timer pour la prochaine étape de l'animation
-        debug("Animation de l'énigme 2 en cours, étape : %d", g_e2_etape); // Message de debug pour indiquer que l'animation de l'énigme 2 est en cours et afficher l'étape actuelle
+        g_e2_compte_flash++; // Incrémente le compteur de flash pour gérer le nombre de flash de la strip de l'énigme 2
+        //debug("Animation de l'énigme 2 en cours, étape : %d", g_e2_etape); // Message de debug pour indiquer que l'animation de l'énigme 2 est en cours et afficher l'étape actuelle
         switch (g_e2_etape) { // En fonction de l'étape actuelle de l'énigme 2, on effectue une action différente sur la strip de l'énigme 2
           case Enum_EtapeEnigme2::Echec:
             if (g_e2_compte_flash % 2 == 0) { // Si le compteur de flash est pair, on allume la strip en rouge, sinon on l'éteint pour créer un effet de flash
@@ -161,13 +173,11 @@ void loop() {
             break;
         }
       }
-      g_e2_compte_flash++; // Incrémente le compteur de flash pour gérer le nombre de flash de la strip de l'énigme 2
-
+      
       if (g_e2_compte_flash >= 10) { // Si la strip a flashé 5 fois (5 on et 5 off), on passe à l'étape suivante de l'animation
         g_e2_compte_flash = 0; // Réinitialise le compteur de flash
         g_e2_activated = false; // Désactive l'animation de l'énigme 2
         g_e2_etape = -1; // Réinitialise l'étape de l'énigme 2
-        g_e2_now = 0; // Réinitialise le timer de l'énigme 2
         g_e2_previous = 0; // Réinitialise le timer de l'énigme 2
       }
     }
@@ -180,13 +190,52 @@ void loop() {
 
 // put function definitions here:
 void commandeI2C(int howMany) {
-  // Lire les données envoyées par le maître
-  g_stringOfAllData = "";
+  // Lire la trame complète puis la pousser dans une file FIFO.
+  char message[I2C_MSG_MAX_LEN] = {0};
+  size_t idx = 0;
   while (Wire.available()) {
     char c = Wire.read();
-    g_stringOfAllData += c;
+    if (idx < (I2C_MSG_MAX_LEN - 1)) {
+      message[idx++] = c;
+    }
   }
-  g_dataReceived = true;
+  message[idx] = '\0';
+
+  if (idx == 0) {
+    return;
+  }
+
+  noInterrupts();
+  if (g_i2cQueueCount < I2C_QUEUE_SIZE) {
+    strncpy(g_i2cQueue[g_i2cQueueHead], message, I2C_MSG_MAX_LEN - 1);
+    g_i2cQueue[g_i2cQueueHead][I2C_MSG_MAX_LEN - 1] = '\0';
+    g_i2cQueueHead = (g_i2cQueueHead + 1) % I2C_QUEUE_SIZE;
+    g_i2cQueueCount++;
+  } else {
+    // Politique: conserver les plus anciennes commandes déjà reçues.
+    g_i2cQueueOverflow = true;
+  }
+  interrupts();
+}
+
+bool popI2CMessage(char* outBuffer, size_t outBufferSize) {
+  if (outBuffer == nullptr || outBufferSize == 0) {
+    return false;
+  }
+
+  noInterrupts();
+  if (g_i2cQueueCount == 0) {
+    interrupts();
+    return false;
+  }
+
+  strncpy(outBuffer, g_i2cQueue[g_i2cQueueTail], outBufferSize - 1);
+  outBuffer[outBufferSize - 1] = '\0';
+  g_i2cQueueTail = (g_i2cQueueTail + 1) % I2C_QUEUE_SIZE;
+  g_i2cQueueCount--;
+  interrupts();
+
+  return true;
 }
 
 /*
@@ -327,6 +376,10 @@ void decodeJSON(JsonDocument& doc) {
     }
     int etape = doc["Etape"].as<int>(); // Extraction de l'étape de l'énigme 2 à partir du JSON, converti en entier pour déterminer comment allumer les LEDs de la strip de l'énigme 2
     
+    g_e2_activated = false; // Indique que l'énigme 2 a été activée pour pouvoir effectuer l'animation de flash dans la loop
+    g_e2_compte_flash = 0; // Réinitialise le compteur de flash
+    g_e2_previous = 0; // Réinitialise le timer de l'énigme 2
+
     switch (etape)
     {
       case Enum_EtapeEnigme2::Tout_Rouge:
