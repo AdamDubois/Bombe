@@ -75,7 +75,7 @@ class Switchs:
         logger.info("[Class_Switchs] Séquence incorrecte. Réinitialisation de l'énigme.")
         self.I2C_handler.sendI2C(self.formatToESPCommand(MSG_LED_ECHEC)) # Envoi de l'animation d'échec à l'ESP
         self.num_sequence = 0 # Réinitialisation du numéro de la séquence actuelle
-        time.sleep(5) # L'animation d'échec dure 5 secondes, on attend la fin de l'animation
+        #time.sleep(5) # L'animation d'échec dure 5 secondes, on attend la fin de l'animation
 
     def bonne_sequence(self):
         logger.info("[Class_Switchs] Séquence correcte. Avancement dans l'énigme.")
@@ -87,7 +87,7 @@ class Switchs:
             self.valeur_switches = self.I2C_handler.decodeJSON(self.I2C_handler.getI2C()) # Récupération de la valeur des switchs depuis l'ESP
 
             if self.valeur_switches != None:
-                if self.valeur_switches != self.last_valeur_switches: # Si la valeur des switchs a changé depuis la dernière vérification
+                if self.valeur_switches != self.last_valeur_switches or (self.valeur_switches == VALEUR_SWITCHES_INIT and self.num_sequence == 0): # Si la valeur des switchs a changé depuis la dernière vérification ou si la valeur des switchs correspond à la valeur initiale (pour permettre de commencer la séquence même si les switchs sont déjà dans la position de départ au démarrage de l'énigme)
                     self.last_valeur_switches = self.valeur_switches.copy() # Mise à jour de la dernière valeur connue des switchs
 
                     logger.debug(f"[Class_Switchs] Modification des switchs détectée")
