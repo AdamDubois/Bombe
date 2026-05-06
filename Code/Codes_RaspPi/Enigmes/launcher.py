@@ -30,7 +30,7 @@ class launcher:
 
         # Reset des ESPs au lancement du launcher
         self.esp_reset = ResetESP()
-        #self.esp_reset.reset_esps()
+        self.esp_reset.reset_esps()
 
         # UI
         self.ui_message = {
@@ -173,17 +173,14 @@ class launcher:
                     pass # Écran de victoire géré par l'interface, on attend que le bouton soit pressé pour recommencer
                 case 5:
                     print("[Launcher] Toutes les enigmes sont terminées. Recommencement au début.")
-                    #self.esp_reset.reset_esps()
+                    self.esp_reset.reset_esps()
 
                     self.e_rfid.close()
                     self.e_rfid = None
-                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_bouton.close()
                     self.e_bouton = None
-                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_switchs.close()
                     self.e_switchs = None
-                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
                     self.enigme = 0
                     self.ui_message["game_start"] = False
