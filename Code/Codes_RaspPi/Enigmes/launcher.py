@@ -54,7 +54,7 @@ class launcher:
         self.e_bouton = None
         self.e_switchs = None
 
-        print("Lancement de l'interface graphique...")
+        print("[Launcher] Lancement de l'interface graphique...")
         self.ui_process = subprocess.Popen([sys.executable, MAIN_UI])
         time.sleep(5)  # Attendre que l'interface se lance correctement
 
@@ -68,7 +68,7 @@ class launcher:
             if self.last_state == GPIO.HIGH and self.state == GPIO.LOW:
                 if self.now - self.last_press_time >= DEBOUNCE_SECONDS:
                     self.last_press_time = self.now
-                    print("Bouton presse -> demande de passage a l'etape suivante")
+                    print("[Launcher] Bouton presse -> demande de passage a l'etape suivante")
                     self.bouton_appuye = True
             self.last_state = self.state
             time.sleep(0.01)
@@ -80,16 +80,16 @@ class launcher:
             client.connect((HOST, PORT))
             client.sendall(data.encode("utf-8"))
             client.close()
-            print(f"Etat UI envoye: {self.ui_message}")
+            print(f"[Launcher] Etat UI envoye: {self.ui_message}")
         except Exception as e:
-            print(f"Erreur socket UI: {e}")
+            print(f"[Launcher] Erreur socket UI: {e}")
 
     def start(self):
         bouton_thread = threading.Thread(target=self.bouton_thread, daemon=True)
         bouton_thread.start()
 
     def stop_launcher(self):
-        print("Arret du launcher...")
+        print("[Launcher] Arret du launcher...")
         self.stop = True
         GPIO.cleanup()
 
@@ -126,7 +126,7 @@ class launcher:
             if self.bouton_appuye:
                 self.bouton_appuye = False
                 self.enigme += 1
-                print(f"Passage a l'enigme suivante: {self.enigme}")
+                print(f"[Launcher] Passage a l'enigme suivante: {self.enigme}")
                 self.ui_message["enigme"] = self.enigme
                 self.send_state()
 
@@ -144,11 +144,11 @@ class launcher:
                     self.e_rfid.play()
                     for i in range(4):
                         self.ui_message["rfid"][i] = self.e_rfid.bonnes_cartes[i]
-                        print()
+                        print(f"[Launcher] Carte RFID {i}: {self.e_rfid.bonnes_cartes[i]}")
                     self.send_state()
                     if self.e_rfid.fini:
                         self.enigme += 1
-                        print(f"Enigme RFID terminee. Passage a l'enigme suivante: {self.enigme}")
+                        print(f"[Launcher] Enigme RFID terminee. Passage a l'enigme suivante: {self.enigme}")
                         self.ui_message["enigme"] = self.enigme
                         self.send_state()
                 case 2:
@@ -157,7 +157,7 @@ class launcher:
                     self.e_bouton.play()
                     if self.e_bouton.fini:
                         self.enigme += 1
-                        print(f"Enigme bouton terminee. Passage a l'enigme suivante: {self.enigme}")
+                        print(f"[Launcher] Enigme bouton terminee. Passage a l'enigme suivante: {self.enigme}")
                         self.ui_message["enigme"] = self.enigme
                         self.send_state()
                 case 3:
@@ -166,24 +166,24 @@ class launcher:
                     self.e_switchs.play()
                     if self.e_switchs.fini:
                         self.enigme += 1
-                        print(f"Enigme Switchs terminee. Passage a l'enigme suivante: {self.enigme}")
+                        print(f"[Launcher] Enigme Switchs terminee. Passage a l'enigme suivante: {self.enigme}")
                         self.ui_message["enigme"] = self.enigme
                         self.send_state()
                 case 4:
                     pass # Écran de victoire géré par l'interface, on attend que le bouton soit pressé pour recommencer
                 case 5:
-                    print("Toutes les enigmes sont terminées. Recommencement au début.")
+                    print("[Launcher] Toutes les enigmes sont terminées. Recommencement au début.")
                     #self.esp_reset.reset_esps()
 
                     self.e_rfid.close()
                     self.e_rfid = None
-                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
+                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_bouton.close()
                     self.e_bouton = None
-                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
+                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
                     self.e_switchs.close()
                     self.e_switchs = None
-                    time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
+                    #time.sleep(0.5)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
                     self.enigme = 0
                     self.ui_message["game_start"] = False
