@@ -85,7 +85,7 @@ class Bouton:
         message = str(message).replace("'", '"')
         message = str(message).replace(" ", "") # Supprime les espaces pour réduire la taille du message à envoyer via I2C, ce qui peut être important si on a une limite de taille de message à respecter
 
-        logger.debug(f"[formatToESPCommande] Message formaté à envoyer via I2C : {message}")
+        #logger.debug(f"[formatToESPCommande] Message formaté à envoyer via I2C : {message}")
         return message
     
     def traiterBoutons(self):
