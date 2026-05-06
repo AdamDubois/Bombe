@@ -146,4 +146,32 @@ const String ESP32_NAME = "NEO";
 
 #define NB_SECTIONS_E0 4 // Nombre de sections pour la strip de l'énigme 0 (doit être un diviseur de NB_LEDS_STRIP_E0)
 
+enum Enum_Enigme {
+  Enigme0 = 0,
+  Enigme1,
+  Enigme2
+};
+
+enum Enum_EtatSectionE0 {
+  Eteint_E0 = 0,
+  Rouge,
+  Vert
+};
+
+enum Enum_EtapeEnigme2 {
+  Tout_Rouge = 0,
+  Echec,
+  Reussite,
+  Premier_Rond,
+  Deuxieme_Rond,
+  Troisieme_Rond,
+  Quatrieme_Rond,
+  Cinquieme_Rond,
+  Sixieme_Rond,
+  Septieme_Rond,
+  Huitieme_Rond,
+  Neuvieme_Rond,
+  Eteint_E2
+};
+
 #endif // CONFIG_H

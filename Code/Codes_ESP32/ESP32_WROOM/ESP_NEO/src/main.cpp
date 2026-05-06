@@ -16,10 +16,21 @@ Adafruit_NeoPixel *tabStrips[NB_STRIP] = {&strip_E0, &strip_E1_0, &strip_E1_1, &
 Adafruit_NeoPixel *tabStrips_E1[NB_STRIPS_E1] = {&strip_E1_0, &strip_E1_1, &strip_E1_2, &strip_E1_3, &strip_E1_4}; // Tableau de pointeurs vers les strips de l'énigme 1
 
 String g_stringOfAllData = "";
-int g_compteur = 0; // Compteur pour flasher la strip sélectionnée
-int g_stripSelected = -1; // -1 signifie qu'aucune strip n'est sélectionnée, sinon 0 à 4 pour les strips E2_0 à E2_4
-int g_couleurStripSelected[3] = {0, 0, 0}; // Couleur de la strip sélectionnée (R, G, B)
-int g_animationIndex = -1; // -1 signifie aucune animation, sinon 0 à 11 pour les différentes étapes de l'énigme 2
+bool g_dataReceived = false; // Indique si des données ont été reçues via I2C
+
+// Enigme 1
+bool g_e1_activated = false; // Indique si l'énigme 1 a été activée (permet de savoir si on doit effectuer une action sur les strips de l'énigme 1)
+int g_e1_stripSelected = -1; // -1 signifie qu'aucune strip n'est sélectionnée, sinon 0 à 4 pour les strips E1_0 à E1_4
+int g_e1_couleurStripSelected[3] = {0, 0, 0}; // Couleur de la strip sélectionnée (R, G, B)
+int g_e1_etape = 0; // Indique l'étape actuelle du flash (0 = eteint, 1 = allumé), permet de savoir quand allumer les LEDs de la strip sélectionnée
+double g_e1_previous = 0; // Timer pour gérer la durée d'affichage des flash de la strip sélectionnée
+
+// Enigme 2
+bool g_e2_activated = false; // Indique si l'énigme 2 a été activée (permet de savoir si on doit effectuer une action sur la strip de l'énigme 2)
+int g_e2_etape = -1; // Indique l'étape actuelle de l'énigme 2 (permet de savoir comment allumer les LEDs de la strip de l'énigme 2)
+int g_e2_compte_flash = 0; // Compteur pour gérer le nombre de flash de la strip de l'énigme 
+double g_e2_now = 0; // Timer pour gérer la durée d'affichage des différentes étapes de l'énigme 2
+double g_e2_previous = 0; // Timer pour gérer la durée d'affichage des différentes étapes de l'énigme 2
 
 // put function declarations here:
 void commandeI2C(int howMany);
@@ -61,167 +72,121 @@ void setup() {
     tabStrips[i]->show(); // Initialize all pixels to 'off'
   }
 
-  delay(500); // Petite pause pour s'assurer que le port série est bien initialisé avant d'envoyer des messages de debug
+  delay(1000); // Petite pause pour s'assurer que le port série est bien initialisé avant d'envoyer des messages de debug
   debug("\n"); // Saute deux lignes pour une meilleure lisibilité dans le moniteur série
   debug("Slave prêt, en attente de requêtes du maître (Joignable à : 0x%x) ...", SLAVE_ADDR); // Message de debug pour indiquer que le slave est prêt
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (g_stripSelected != -1) 
+  try
   {
-    // Faire clignoter la strip sélectionnée pour indiquer qu'elle est sélectionnée
-    if (g_compteur <= 6 ) 
-    { // Clignote toutes les 10 itérations (environ toutes les 500 ms)
-      tabStrips_E1[g_stripSelected]->fill(tabStrips_E1[g_stripSelected]->Color(g_couleurStripSelected[0], g_couleurStripSelected[1], g_couleurStripSelected[2])); // Allumer la strip sélectionnée avec la couleur définie
-    }
-    else if (g_compteur <= 7)
-    {
-      tabStrips_E1[g_stripSelected]->fill(0); // Éteindre la strip sélectionnée
-    }
-    else
-    {
-      g_compteur = 0; // Réinitialiser le compteur pour recommencer le clignotement
-    }
-  }
+    //debug("Loop en cours d'exécution..."); // Message de debug pour indiquer que la loop est en cours d'exécution
+    if (g_dataReceived) { // Vérifie si des données ont été reçues via I2C
+      debug("Données reçues via I2C : %s", g_stringOfAllData.c_str()); // Message de debug pour afficher les données reçues
+      g_dataReceived = false; // Réinitialise le flag de réception de données
 
-  for (int i = 0; i < NB_STRIPS_E1; i++) {
-    tabStrips_E1[i]->show(); // Afficher les changements sur toutes les strips de l'énigme 1
-  }
-  
-  switch (g_animationIndex)
-  {
-    case 0: // Tout en rouge
-      fill_Enigme2(CRGB::Red); // Allumer tous les pixels de la strip E2 en rouge
-      strip_E2.show();
-      break;
+      // Création d'un document JSON pour parser les données reçues
+      JsonDocument doc; // Document JSON pour parser les données reçues
 
-    case 1: // Animation échec
-      for (int i = 0; i < 5; i++)
-      {
-        fill_Enigme2(CRGB::Red); // Allumer les pixels visibles de la strip E2 en rouge
-        strip_E2.show();
-        delay(500); // Attendre 500 millisecondes
-
-        strip_E2.fill(0); // Éteindre les pixels visibles de la strip E2
-        strip_E2.show();
-        delay(500); // Attendre 500 millisecondes
+      // Parse le JSON reçu
+      DeserializationError error = deserializeJson(doc, g_stringOfAllData);
+      if (error) {
+        debug("Erreur lors du parsing du JSON : %s", error.c_str()); // Message de debug pour indiquer une erreur lors du parsing du JSON
+        return; // Sort de la loop pour attendre la prochaine commande
       }
 
-      fill_Enigme2(CRGB::Red); // Allumer les LEDs paires en rouge
-      strip_E2.show();
+      // Décodage du JSON et exécution des actions appropriées en fonction du contenu du JSON
+      decodeJSON(doc); // Appelle la fonction de décodage du JSON pour traiter les commandes reçues
+    }
 
-      g_animationIndex = -1; // Réinitialiser l'index de l'animation pour éviter de répéter l'animation
 
-      break;
-
-    case 2: // Animation réussite
-      for (int i = 0; i < 5; i++)
-      {
-        strip_E2.fill(strip_E2.Color(0, 255, 0)); // Allumer les LEDs paires en vert
-        strip_E2.show();
-        delay(500); // Attendre 500 millisecondes
-
-        strip_E2.fill(strip_E2.Color(0, 0, 0)); // Éteindre les LEDs paires
-        strip_E2.show();
-        delay(500); // Attendre 500 millisecondes
+    if (g_e1_activated) { // Si il y a une animation de l'énigme 1 en cours, on l'exécute
+      if (g_e1_previous == 0) { // Si le timer n'est pas encore initialisé, on l'initialise
+        g_e1_previous = millis();
       }
+      switch (g_e1_etape)
+      {
+      case 0:
+        if (millis() - g_e1_previous >= 500) { // Si 500 ms se sont écoulées depuis la dernière mise à jour de l'animation, on passe à l'étape suivante
+          tabStrips_E1[g_e1_stripSelected]->fill(0); // Éteint la strip sélectionnée pour créer un effet de clignotement
+          tabStrips_E1[g_e1_stripSelected]->show(); // Affiche la strip sélectionnée
+          g_e1_etape = 1; // Passe à l'étape suivante de l'animation
+          g_e1_previous = millis(); // Réinitialise le timer pour la prochaine étape de l'animation
+        }
+        break;
+      case 1:
+        if (millis() - g_e1_previous >= 100) { // Si 100 ms se sont écoulées depuis la dernière mise à jour de l'animation, on passe à l'étape suivante
+          tabStrips_E1[g_e1_stripSelected]->fill(tabStrips_E1[g_e1_stripSelected]->Color(g_e1_couleurStripSelected[0], g_e1_couleurStripSelected[1], g_e1_couleurStripSelected[2])); // Allume la strip sélectionnée avec la couleur définie
+          tabStrips_E1[g_e1_stripSelected]->show(); // Affiche la strip sélectionnée
+          g_e1_etape = 0; // Réinitialise l'étape de l'énigme 1 pour recommencer le clignotement
+          g_e1_previous = millis(); // Réinitialise le timer pour la prochaine étape de l'animation
+        }
+        break;
       
-      strip_E2.fill(strip_E2.Color(0, 255, 0)); // Allumer les LEDs paires en vert
-      strip_E2.show();
+      default:
+        break;
+      }
+    }
 
-      g_animationIndex = -1; // Réinitialiser l'index de l'animation pour éviter de répéter l'animation
-      
-      break;
+    
+    if (g_e2_activated) { // Si il y a une animation de l'énigme 2 en cours, on l'exécute
+      if (g_e2_now == 0) { // Si le timer n'est pas encore initialisé, on l'initialise
+        g_e2_now = millis();
+        g_e2_previous = millis();
+      }
+      if (millis() - g_e2_previous >= 500) { // Si 500 ms se sont écoulées depuis la dernière mise à jour de l'animation, on passe à l'étape suivante
+        g_e2_previous = millis(); // Réinitialise le timer pour la prochaine étape de l'animation
+        debug("Animation de l'énigme 2 en cours, étape : %d", g_e2_etape); // Message de debug pour indiquer que l'animation de l'énigme 2 est en cours et afficher l'étape actuelle
+        switch (g_e2_etape) { // En fonction de l'étape actuelle de l'énigme 2, on effectue une action différente sur la strip de l'énigme 2
+          case Enum_EtapeEnigme2::Echec:
+            if (g_e2_compte_flash % 2 == 0) { // Si le compteur de flash est pair, on allume la strip en rouge, sinon on l'éteint pour créer un effet de flash
+              fill_Enigme2(CRGB::Red); // Étape d'échec, la strip doit flasher en rouge
+            }
+            else {
+              fill_Enigme2(CRGB::Black); // Éteint la strip pour créer un effet de flash
+            }
+            break;
+          case Enum_EtapeEnigme2::Reussite:
+            if (g_e2_compte_flash % 2 == 0) { // Si le compteur de flash est pair, on allume la strip en vert, sinon on l'éteint pour créer un effet de flash
+              fill_Enigme2(CRGB::Green); // Étape de réussite, la strip doit flasher en vert
+            }
+            else {
+              fill_Enigme2(CRGB::Black); // Éteint la strip pour créer un effet de flash
+            }
+            break;
 
-    case 3: // 1ère DEL en vert
-      strip_E2.setPixelColor(0, strip_E2.Color(0, 255, 0)); // Allumer la première colonne de LEDs en vert
-      strip_E2.show();
+          default:
+            debug("Étape de l'énigme 2 non reconnue dans la loop : %d", g_e2_etape); // Message de debug pour indiquer que l'étape de l'énigme 2 n'est pas reconnue
+            break;
+        }
+      }
+      g_e2_compte_flash++; // Incrémente le compteur de flash pour gérer le nombre de flash de la strip de l'énigme 2
 
-      break;
-
-    case 4: // 2ème DEL en vert
-      strip_E2.setPixelColor(2, strip_E2.Color(0, 255, 0)); // Allumer la deuxième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 5: // 3ème DEL en vert
-      strip_E2.setPixelColor(4, strip_E2.Color(0, 255, 0)); // Allumer la troisième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 6: // 4ème DEL en vert
-      strip_E2.setPixelColor(6, strip_E2.Color(0, 255, 0)); // Allumer la quatrième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 7: // 5ème DEL en vert
-      strip_E2.setPixelColor(8, strip_E2.Color(0, 255, 0)); // Allumer la cinquième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 8: // 6ème DEL en vert
-      strip_E2.setPixelColor(10, strip_E2.Color(0, 255, 0)); // Allumer la sixième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 9: // 7ème DEL en vert
-      strip_E2.setPixelColor(12, strip_E2.Color(0, 255, 0)); // Allumer la septième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 10: // 8ème DEL en vert
-      strip_E2.setPixelColor(14, strip_E2.Color(0, 255, 0)); // Allumer la huitième colonne de LEDs en vert
-      strip_E2.show();
-
-      break;
-
-    case 11: // 9ème DEL en vert
-      strip_E2.setPixelColor(16, strip_E2.Color(0, 255, 0)); // Allumer la neuvième colonne de LEDs en vert
-      strip_E2.show();
-      break;
-      
-    case 12: // Éteindre toutes les DELs
-      strip_E2.fill(strip_E2.Color(0, 0, 0)); // Éteindre les LEDs paires
-      strip_E2.show();
-      break;
-
-    default:
-      break;
+      if (g_e2_compte_flash >= 10) { // Si la strip a flashé 5 fois (5 on et 5 off), on passe à l'étape suivante de l'animation
+        g_e2_compte_flash = 0; // Réinitialise le compteur de flash
+        g_e2_activated = false; // Désactive l'animation de l'énigme 2
+        g_e2_etape = -1; // Réinitialise l'étape de l'énigme 2
+        g_e2_now = 0; // Réinitialise le timer de l'énigme 2
+        g_e2_previous = 0; // Réinitialise le timer de l'énigme 2
+      }
+    }
   }
-
-  g_animationIndex = -1; // Réinitialiser l'index de l'animation pour éviter de répéter l'animation
-  g_compteur++; // Incrémenter le compteur pour faire clignoter la strip sélectionnée
-  delay(100); // Petite pause pour éviter de surcharger le processeur
+  catch(const std::exception& e)
+  {
+    debug("Exception dans la loop: %s", e.what());
+  }
 }
 
 // put function definitions here:
 void commandeI2C(int howMany) {
-    // Lire les données envoyées par le maître
+  // Lire les données envoyées par le maître
   g_stringOfAllData = "";
   while (Wire.available()) {
     char c = Wire.read();
     g_stringOfAllData += c;
   }
-  Serial.println("Données reçues du maître: " + g_stringOfAllData);
-
-  // Parsing du JSON
-  JsonDocument doc;
-  DeserializationError error = deserializeJson(doc, g_stringOfAllData);
-
-  if (error) {
-    Serial.print("Erreur JSON: ");
-    Serial.println(error.c_str());
-    return;
-  }
-
-  decodeJSON(doc);
+  g_dataReceived = true;
 }
 
 /*
@@ -266,56 +231,217 @@ Return :
 */
 void decodeJSON(JsonDocument& doc) {
   g_Neo.working(); // Indique que le système est en train de traiter une commande
-  int enigme = doc["E"];
 
-  if (enigme == 0) {
-    debug("Traitement de l'énigme 0, sections: %d %d %d %d", doc["0"].as<int>(), doc["1"].as<int>(), doc["2"].as<int>(), doc["3"].as<int>());
+  int enigme = -1; // Variable pour stocker le numéro de l'énigme extrait du JSON, initialisée à -1 pour indiquer une valeur invalide en cas d'erreur d'extraction
+  try
+  {
+    enigme = doc["E"]; // Extraction du numéro de l'énigme pour déterminer quelle action effectuer
+  }
+  catch(const std::exception& e)
+  {
+    debug("Erreur lors de l'extraction du numéro de l'énigme : %s", e.what()); // Message de debug pour indiquer une erreur lors de l'extraction du numéro de l'énigme
+    return; // Sort de la fonction si le numéro de l'énigme ne peut pas être extrait, car il est essentiel pour déterminer quelle action effectuer
+  }
+
+  switch (enigme)
+  {
+  case Enum_Enigme::Enigme0:
+    try
+    {
+        debug("Traitement de l'énigme 0, sections: %d %d %d %d", doc["0"].as<int>(), doc["1"].as<int>(), doc["2"].as<int>(), doc["3"].as<int>());
+    }
+    catch(const std::exception& e)
+    {
+        debug("Erreur lors de l'extraction des données de l'énigme 0 : %s", e.what()); // Message de debug pour indiquer une erreur lors de l'extraction des états des sections
+        return; // Sort de la fonction si les états des sections ne peuvent pas être extraits, car ils sont essentiels pour déterminer comment allumer les LEDs de la matrice de l'énigme 0
+    }
+    
     for (int i = 0; i < NB_SECTIONS_E0; i++) {
-      int state = doc[String(i)].as<int>();
-      if (state == 0) {
-        fill_section_Enigme0(i, CRGB::Black); // Éteindre la section
-      } 
-      else if (state == 1) {
-        fill_section_Enigme0(i, CRGB::Red); // Allumer la section en rouge
-      } 
-      else if (state == 2) {
-        fill_section_Enigme0(i, CRGB::Green); // Allumer la section en vert
-      }
-    }
-    FastLED.show();
-  }
-  else if (enigme == 1) {
-    debug("Traitement de l'énigme 1, strip sélectionnée: %d", doc["Selected"].as<int>());
-    g_stripSelected = doc["Selected"];
-    g_compteur = 0; // Réinitialiser le compteur pour faire clignoter la strip sélectionnée
+      // Pas de try ici, il est déjà un peu plus haut
+      int sectionState = doc[String(i).c_str()].as<int>(); // Extraction de l'état de la section i à partir du JSON, converti en entier pour déterminer comment allumer les LEDs de cette section
 
+      switch (sectionState)
+      {
+        case Enum_EtatSectionE0::Eteint_E0:
+          fill_section_Enigme0(i, CRGB::Black); // Éteindre la section
+          break;
+        case Enum_EtatSectionE0::Rouge:
+          fill_section_Enigme0(i, CRGB::Red); // Allumer la section en rouge
+          break;
+        case Enum_EtatSectionE0::Vert:
+          fill_section_Enigme0(i, CRGB::Green); // Allumer la section en vert
+          break;
+        default:
+          debug("État de section invalide pour la section %d : %d", i, sectionState); // Message de debug pour indiquer un état de section invalide
+          break;
+        }
+      }
+
+    strip_E0.show(); // Affiche les changements sur la strip E0 après avoir mis à jour toutes les sections
+    break;
+
+  case Enum_Enigme::Enigme1:
+    try
+    {
+      debug("Traitement de l'énigme 1, strip sélectionnée: %d. Couleurs: %s %s %s %s %s", doc["Selected"].as<int>(), doc["S0"].as<const char*>(), doc["S1"].as<const char*>(), doc["S2"].as<const char*>(), doc["S3"].as<const char*>(), doc["S4"].as<const char*>());
+    }
+    catch(const std::exception& e)
+    {
+      debug("Erreur lors de l'extraction des données de l'énigme 1 : %s", e.what()); // Message de debug pour indiquer une erreur lors de l'extraction des données de l'énigme 1
+      return; // Sort de la fonction si les données de l'énigme 1 ne peuvent pas être extraites, car elles sont essentielles pour déterminer comment allumer les LEDs des strips de l'énigme 1
+    }
+    g_e1_stripSelected = doc["Selected"].as<int>(); // Extraction du numéro de la strip sélectionnée à partir du JSON, converti en entier pour déterminer quelle strip doit flasher
+    if (g_e1_stripSelected >= 0 && g_e1_stripSelected < NB_STRIPS_E1) {
+      g_e1_activated = true; // Indique que l'énigme 1 a été activée pour pouvoir effectuer l'animation de flash de la strip sélectionnée dans la loop
+    }
+    else {
+      g_e1_activated = false; // Si le numéro de strip sélectionnée n'est pas valide, on désactive l'animation de flash
+      g_e1_stripSelected = -1; // Réinitialise le numéro de strip sélectionnée à -1 pour indiquer qu'aucune strip n'est sélectionnée
+    }
     for (int i = 0; i < NB_STRIPS_E1; i++) {
-      String colorStr = doc["S" + String(i)].as<String>();
-      long colorLong = strtol(colorStr.substring(1).c_str(), NULL, 16);
-      CRGB color = CRGB((colorLong >> 16) & 0xFF, (colorLong >> 8) & 0xFF, colorLong & 0xFF);
+      String colorStr = doc[String("S") + String(i)].as<String>(); // Extraction de la couleur de la strip i à partir du JSON, converti en chaîne de caractères pour être transformé en couleur RGB
+      long colorLong = strtol(colorStr.substring(1).c_str(), NULL, 16); // Conversion de la couleur hexadécimale en long (en sautant le caractère '#' au début)
+      CRGB color = CRGB((colorLong >> 16) & 0xFF, (colorLong >> 8) & 0xFF, colorLong & 0xFF); // Extraction des composantes R, G, B à partir du long de couleur
 
-      if (i == g_stripSelected) { // Si c'est la strip sélectionnée, on stocke sa couleur pour le clignotement
-        g_couleurStripSelected[0] = color.r;
-        g_couleurStripSelected[1] = color.g;
-        g_couleurStripSelected[2] = color.b;
+      if (i == g_e1_stripSelected) {
+        g_e1_couleurStripSelected[0] = color.r; // Stocke la composante rouge de la strip sélectionnée pour pouvoir l'utiliser dans la loop pour faire flasher la strip
+        g_e1_couleurStripSelected[1] = color.g; // Stocke la composante verte de la strip sélectionnée pour pouvoir l'utiliser dans la loop pour faire flasher la strip
+        g_e1_couleurStripSelected[2] = color.b; // Stocke la composante bleue de la strip sélectionnée pour pouvoir l'utiliser dans la loop pour faire flasher la strip
       }
 
-      if (i >= 0 && i < NB_STRIPS_E1) {
-        tabStrips_E1[i]->fill(tabStrips_E1[i]->Color(color.r, color.g, color.b));
-        tabStrips_E1[i]->show();
-      } 
+      tabStrips_E1[i]->fill(tabStrips_E1[i]->Color(color.r, color.g, color.b)); // Met à jour la couleur de la strip i en fonction de la couleur extraite du JSON
+      tabStrips_E1[i]->show(); // Affiche les changements sur la strip i après avoir mis à jour sa couleur
     }
-    FastLED.show();
-  } 
-  else if (enigme == 2) {
-    debug("Traitement de l'énigme 2, étape: %d", doc["Etape"].as<int>());
-    g_animationIndex = doc["Etape"];
-  } 
-  else {
-    debug("Numéro d'énigme non reconnu: %d", enigme);
+    break;
+
+  case Enum_Enigme::Enigme2:
+  {
+    try
+    {
+      debug("Traitement de l'énigme 2, étape: %d", doc["Etape"].as<int>());
+    }
+    catch(const std::exception& e)
+    {
+      debug("Erreur lors de l'extraction de l'étape de l'énigme 2 : %s", e.what()); // Message de debug pour indiquer une erreur lors de l'extraction de l'étape de l'énigme 2
+      return; // Sort de la fonction si l'étape de l'énigme 2 ne peut pas être extraite, car elle est essentielle pour déterminer comment allumer les LEDs de la strip de l'énigme 2
+    }
+    int etape = doc["Etape"].as<int>(); // Extraction de l'étape de l'énigme 2 à partir du JSON, converti en entier pour déterminer comment allumer les LEDs de la strip de l'énigme 2
+    
+    switch (etape)
+    {
+      case Enum_EtapeEnigme2::Tout_Rouge:
+        fill_Enigme2(CRGB::Red); // Allumer les pixels visibles de la strip de l'énigme 2 en rouge
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels de l'énigme 2
+        break;
+      case Enum_EtapeEnigme2::Echec:
+        fill_Enigme2(CRGB::Red); // Allumer les pixels visibles de la strip de l'énigme 2 en rouge
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels de l'énigme 2
+        g_e2_activated = true; // Indique que l'énigme 2 a été activée pour pouvoir effectuer l'animation de flash dans la loop
+        g_e2_etape = Enum_EtapeEnigme2::Echec;
+        break;
+      case Enum_EtapeEnigme2::Reussite:
+        fill_Enigme2(CRGB::Green); // Allumer les pixels visibles de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels de l'énigme 2
+        g_e2_activated = true; // Indique que l'énigme 2 a été activée pour pouvoir effectuer l'animation de flash dans la loop
+        g_e2_etape = Enum_EtapeEnigme2::Reussite;
+        break;
+      case Enum_EtapeEnigme2::Premier_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour le premier pixel
+        break;
+      case Enum_EtapeEnigme2::Deuxieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Troisieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Quatrieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Cinquieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(8, CRGB::Green); // Allumer le cinquième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Sixieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(8, CRGB::Green); // Allumer le cinquième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(10, CRGB::Green); // Allumer le sixième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Septieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(8, CRGB::Green); // Allumer le cinquième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(10, CRGB::Green); // Allumer le sixième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(12, CRGB::Green); // Allumer le septième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Huitieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(8, CRGB::Green); // Allumer le cinquième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(10, CRGB::Green); // Allumer le sixième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(12, CRGB::Green); // Allumer le septième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(14, CRGB::Green); // Allumer le huitième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Neuvieme_Rond:
+        strip_E2.setPixelColor(0, CRGB::Green); // Allumer le premier pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(2, CRGB::Green); // Allumer le deuxième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(4, CRGB::Green); // Allumer le troisième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(6, CRGB::Green); // Allumer le quatrième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(8, CRGB::Green); // Allumer le cinquième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(10, CRGB::Green); // Allumer le sixième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(12, CRGB::Green); // Allumer le septième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(14, CRGB::Green); // Allumer le huitième pixel de la strip de l'énigme 2 en vert
+        strip_E2.setPixelColor(16, CRGB::Green); // Allumer le neuvième pixel de la strip de l'énigme 2 en vert
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir mis à jour les pixels
+        break;
+      case Enum_EtapeEnigme2::Eteint_E2:
+        strip_E2.fill(0); // Éteindre tous les pixels de la strip de l'énigme 2
+        strip_E2.show(); // Affiche les changements sur la strip E2 après avoir éteint les pixels
+        break;
+    
+      default:
+        debug("Étape de l'énigme 2 invalide : %d", etape); // Message de debug pour indiquer une étape de l'énigme 2 invalide
+        break;
+    }
+    break;
   }
-  g_Neo.success(); // Indique que la commande a été traitée avec succès
-  g_Neo.waiting(); // Indique que le système est de nouveau en attente de commandes
+
+  default:
+    debug("Numéro d'énigme invalide : %d", enigme); // Message de debug pour indiquer un numéro d'énigme invalide
+    break;
+  }
+}
+
+void fill_section_Enigme0(int section, CRGB color) {
+  int startPixel = section * (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
+  int endPixel = startPixel + (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
+
+  strip_E0.fill(strip_E0.Color(color.r, color.g, color.b), startPixel, endPixel - startPixel); // Allume les pixels de la section spécifiée de la strip E0 avec la couleur spécifiée
+
+  strip_E0.show(); // Affiche les changements sur la strip E0
 }
 
 /*
@@ -338,13 +464,4 @@ void fill_Enigme2(CRGB color) {
     }
   }
   strip_E2.show(); // Affiche les changements sur la strip E2
-}
-
-void fill_section_Enigme0(int section, CRGB color) {
-  int startPixel = section * (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
-  int endPixel = startPixel + (NB_LEDS_STRIP_E0 / NB_SECTIONS_E0);
-
-  strip_E0.fill(strip_E0.Color(color.r, color.g, color.b), startPixel, endPixel - startPixel); // Allume les pixels de la section spécifiée de la strip E0 avec la couleur spécifiée
-
-  strip_E0.show(); // Affiche les changements sur la strip E0
 }
