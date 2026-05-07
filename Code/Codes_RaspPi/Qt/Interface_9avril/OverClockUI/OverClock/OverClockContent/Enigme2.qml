@@ -225,10 +225,10 @@ Rectangle {
                 anchors.centerIn: parent
 
                 Rectangle { width: 180; height: 180; radius: 90; color: "#55007b" }
-                Rectangle { width: 180; height: 180; radius: 90; color: "#00b4ff" }
+                Rectangle { width: 180; height: 180; radius: 90; color: "#0045ff" }
                 Rectangle { width: 180; height: 180; radius: 90; color: "#00ff88" }
                 Rectangle { width: 180; height: 180; radius: 90; color: "#fffb00" }
-                Rectangle { width: 180; height: 180; radius: 90; color: "#ba4b01" }
+                Rectangle { width: 180; height: 180; radius: 90; color: "#ff7403" }
             }
         }
     }
