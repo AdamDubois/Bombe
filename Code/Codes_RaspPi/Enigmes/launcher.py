@@ -23,6 +23,8 @@ import sys
 
 import RPi.GPIO as GPIO
 
+import smbus2 #!!!
+
 from rst_ESP import ResetESP
 
 from Bouton.EnigmeBouton import Bouton
@@ -63,6 +65,8 @@ class launcher:
         self.last_press_time = 0.0
         self.now = time.time()
         self.bouton_appuye = False
+
+        self.handler_i2c = smbus2.SMBus(1)  # !!!
 
         # Enigmes
         self.enigme = 0
