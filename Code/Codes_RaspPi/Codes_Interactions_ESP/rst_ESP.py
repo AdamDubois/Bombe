@@ -72,3 +72,12 @@ class ResetESP:
             GPIO.cleanup()
         except Exception as e:
             print(f"Erreur lors du nettoyage des GPIO: {e}")
+
+if __name__ == "__main__":
+    esp_handler = ResetESP()
+    try:
+        esp_handler.reset_esps()  # Réinitialiser tous les ESPs
+    except Exception as e:
+        print(f"Erreur lors du reset des ESPs: {e}")
+    finally:
+        esp_handler.cleanup()

@@ -1,3 +1,15 @@
+/**
+ * @file main.cpp
+ * @brief Ce code est destiné à être exécuté sur un ESP32 configuré en tant qu'esclave I2C.
+ * Il reçoit des commandes du Raspberry Pi pour contrôler les animations de plusieurs strips de DELs programmables,  
+ * il utilise la bibliothèque Adafruit NeoPixel pour gérer les strips de DELs et la bibliothèque ArduinoJson pour parser les commandes reçues au format JSON.
+ * @author Adam Dubois
+ * @date 2026-05-12
+ * @version 1.0
+ * 
+ * La configuration des broches et des paramètres se trouve dans le fichier config.h. (include/config.h)
+ */
+
 #include "config.h"
 
 // Création d'une instance de la classe Debug_Neo

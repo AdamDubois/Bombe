@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : read_RFID_I2C.py
+Description: Ce script permet de lire les données RFID via I2C entre un Raspberry Pi et un ESP32.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-05-12"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 from smbus2 import SMBus, i2c_msg      # Pour l'I2C (sudo pip install smbus2)
 import rst_ESP as rst
 import time

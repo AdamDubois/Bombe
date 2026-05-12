@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : commandes_I2C.py
+Description: Ce script permet d'envoyer et de recevoir des messages I2C entre un Raspberry Pi et un ESP32.
+Il offre une interface simple pour envoyer des commandes à un ESP32 spécifique et pour lire les réponses de l'ESP32.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-05-12"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 from smbus2 import SMBus, i2c_msg      # Pour l'I2C (sudo pip install smbus2)
 import time
 

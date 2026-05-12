@@ -8,3 +8,4 @@ Ce dossier contient les fichiers de code pour le projet ESP32-WROOM qui gère le
 
 Ce dossier contient les fichiers de code pour le projets ESP32-WROOM DEL. Il est organisé de la manière suivante :
 - `src/` : Contient tous les fichiers de code qui ont été écrits en C++ pour le projet ESP32-WROOM qui gère les strips de DELs programmables. Ces fichiers sont actifs et maintenus, et sont utilisés pour gérer les différentes fonctionnalités liées aux DELs programmables dans le projet Bombe.
+- `include/` : Contient le fichier de configuration pour le projet ESP32-WROOM qui gère les strips de DELs programmables. Ce fichier contient les différentes configurations et paramètres utilisés dans le projet, tels que les broches utilisées pour les DELs, les paramètres de communication I2C, etc.

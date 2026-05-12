@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : EnigmeBouton.py
+Description: Ce script permet de gérer l'énigme du bouton avec les bandes LED et les boutons.
+Ce fichier contient une classe Bouton qui gère l'état des boutons, le mélange des couleurs, 
+la vérification de la correspondance avec les couleurs cibles, et la communication avec l'ESP32 via I2C 
+pour mettre à jour les bandes LED en fonction de l'état des boutons et de la progression du joueur dans l'énigme.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-05-12"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 from .Config import *
 from .I2C_handler import I2C
 from .Log import logger
