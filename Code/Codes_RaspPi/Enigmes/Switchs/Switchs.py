@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : Switchs.py
+Description: Ce script permet de gérer l'énigme des switchs avec les entrées des switchs.
+Ce fichier contient une classe Switchs qui gère l'état des switchs, la vérification de la séquence attendue, 
+et la communication avec l'ESP32 via I2C pour mettre à jour les bandes LED en fonction de l'état des switchs et de la progression du joueur dans l'énigme.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-05-12"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 from .Config import *
 from .I2C_handler import I2C
 from .Log import logger

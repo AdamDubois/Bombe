@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+Fichier : launcher.py
+Description: Ce script est le point d'entrée principal du projet. Il gère le lancement de l'interface graphique, 
+la communication avec les ESP32, et la coordination des différentes énigmes (RFID, Bouton, Switchs).
+Il utilise des threads pour gérer le bouton de skip et la communication avec l'interface graphique, 
+et il suit la progression du joueur à travers les différentes énigmes pour mettre à jour l'interface en conséquence.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-05-12"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 import json
 import socket
 import threading

@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+#coding: utf-8
+"""
+    Fichier : Test_RFID.py
+    Description: Script pour tester l'énigme du RFID.
+"""
+__author__ = "Adam Dubois"
+__version__ = "1.0.1"
+__date__ = "2026-04-15"
+__maintainer__ = "Adam Dubois"
+__email__ = "adamdubois19@hotmail.com"
+__status__ = "Production"
+
 from RFID.RFID import RFID
 import time
 
