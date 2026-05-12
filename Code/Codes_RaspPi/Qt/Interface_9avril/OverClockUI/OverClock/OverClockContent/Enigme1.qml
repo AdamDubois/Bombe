@@ -231,7 +231,7 @@ Rectangle {
                         border.width: 3
                         border.color: "#3A3A3A"
 
-                        color: root.rfidState[0] ? "#3A1A1A" : "#111821"
+                        color: root.rfidState[0] ? "#1E7A3A" : "#111821"
                     }
 
                     Rectangle {
@@ -241,7 +241,7 @@ Rectangle {
                         border.width: 3
                         border.color: "#3A3A3A"
 
-                        color: root.rfidState[1] ? "#3A1A1A" : "#111821"
+                        color: root.rfidState[1] ? "#1E7A3A" : "#111821"
                     }
 
                     Rectangle {
@@ -251,7 +251,7 @@ Rectangle {
                         border.width: 3
                         border.color: "#3A3A3A"
 
-                        color: root.rfidState[2] ? "#3A1A1A" : "#111821"
+                        color: root.rfidState[2] ? "#1E7A3A" : "#111821"
                     }
 
                     Rectangle {
@@ -261,7 +261,7 @@ Rectangle {
                         border.width: 3
                         border.color: "#3A3A3A"
 
-                        color: root.rfidState[3] ? "#3A1A1A" : "#111821"
+                        color: root.rfidState[3] ? "#1E7A3A" : "#111821"
                     }
                 }
 

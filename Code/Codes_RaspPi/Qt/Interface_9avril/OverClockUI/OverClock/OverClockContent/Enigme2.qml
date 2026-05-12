@@ -332,7 +332,7 @@ Rectangle {
                 border.width: 3
                 border.color: "#3A3A3A"
 
-                color: "#3A1A1A"
+                color: "#1E7A3A"
             }
 
             Rectangle {
@@ -342,7 +342,7 @@ Rectangle {
                 border.width: 3
                 border.color: "#3A3A3A"
 
-                color: "#3A1A1A"
+                color: "#1E7A3A"
             }
 
             Rectangle {
@@ -352,7 +352,7 @@ Rectangle {
                 border.width: 3
                 border.color: "#3A3A3A"
 
-                color: "#3A1A1A"
+                color: "#1E7A3A"
             }
 
             Rectangle {
@@ -362,7 +362,7 @@ Rectangle {
                 border.width: 3
                 border.color: "#3A3A3A"
 
-                color: "#3A1A1A"
+                color: "#1E7A3A"
             }
         }
 

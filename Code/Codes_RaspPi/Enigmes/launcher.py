@@ -209,6 +209,16 @@ class launcher:
 
                     time.sleep(2)  # Petite pause pour s'assurer que les ESPs ont le temps de redémarrer avant de relancer les énigmes
 
+                    if self.enigme == 0: #!!!
+                        message = str("{\"E\":99}")
+                        data = [ord(c) for c in message]
+                        try:
+                            i2c_msg_write = smbus2.i2c_msg.write(0x12, data)
+                            self.handler_i2c.i2c_rdwr(i2c_msg_write)
+                            print(f"[Launcher] Message de reset envoye a l'ESP: {message}")
+                        except Exception as e:
+                            print(f"[Launcher] Erreur I2C lors de l'envoi du message de reset: {e}")
+
 if __name__ == "__main__":
     launcher_instance = launcher()
     try:
